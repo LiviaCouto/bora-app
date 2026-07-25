@@ -18,7 +18,7 @@ async function dayoff_marcarHoje() {
     return;
   }
 
-  alert('Day off registrado. Sua sequência não vai quebrar por hoje 🌴');
+  alert('Day off registrado. Sua sequência não vai quebrar por hoje.');
   render_home();
 }
 

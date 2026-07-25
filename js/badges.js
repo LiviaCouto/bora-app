@@ -16,7 +16,7 @@ async function render_badges() {
 
   document.getElementById('badges-lista').innerHTML = Object.entries(BADGES).map(([codigo, info]) => `
     <div class="admin-item-linha" style="opacity:${conquistados.has(codigo) ? '1' : '0.4'}">
-      <div>${info.emoji} <strong>${info.titulo}</strong><div class="muted">${info.descricao}</div></div>
+      <div style="display:flex;align-items:center;gap:10px">${icon(info.icone, 22)} <div><strong>${info.titulo}</strong><div class="muted">${info.descricao}</div></div></div>
       ${conquistados.has(codigo) ? '<span class="badge badge-success">Conquistado</span>' : '<span class="badge badge-neutral">Bloqueado</span>'}
     </div>
   `).join('');

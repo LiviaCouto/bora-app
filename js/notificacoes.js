@@ -21,7 +21,7 @@ async function notificacoes_pedirPermissao() {
   }
   const permissao = await Notification.requestPermission();
   document.getElementById('notificacoes-status').textContent =
-    permissao === 'granted' ? 'Notificações ativadas ✅' : 'Notificações não autorizadas';
+    permissao === 'granted' ? 'Notificações ativadas' : 'Notificações não autorizadas';
 }
 
 function notificacoes_mostrarLembreteLocal(titulo, corpo) {

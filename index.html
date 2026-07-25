@@ -19,7 +19,7 @@
   </div>
 
   <div id="tela-pin" style="display:none;text-align:center">
-    <button onclick="auth_voltarSelecao()" class="btn btn-outline btn-sm" style="margin-bottom:20px">← Voltar</button>
+    <button onclick="auth_voltarSelecao()" class="btn btn-outline btn-sm" style="margin-bottom:20px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Voltar</button>
     <h2 style="font-family:var(--font-display)" id="auth-nome-selecionado"></h2>
     <p class="muted">Digite seu PIN</p>
     <div class="pin-input">
@@ -71,7 +71,7 @@
       <div class="muted" id="home-streak-total"></div>
     </div>
   </div>
-  <button class="btn btn-outline btn-sm" style="margin-top:16px" onclick="dayoff_marcarHoje()">🌴 Marcar day off hoje</button>
+  <button class="btn btn-outline btn-sm" style="margin-top:16px" onclick="dayoff_marcarHoje()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13a3 3 0 0 1 0 6h-1"/><path d="M4 8v8a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V8"/><path d="M7 2v2M11 2v2"/></svg> Marcar day off hoje</button>
 </div>
 
 <!-- ========== TREINO (escolha A/B) ========== -->
@@ -97,7 +97,8 @@
       <button class="btn btn-primary btn-full" onclick="execucao_terminarSerie()">Terminei essa série</button>
     </div>
     <div class="toast-descanso" id="execucao-aviso-descanso">
-      ⏸️ <span id="execucao-aviso-descanso-texto"></span>
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M10 9v6M14 9v6"/></svg>
+      <span id="execucao-aviso-descanso-texto"></span>
     </div>
   </div>
 </div>
@@ -114,17 +115,17 @@
     <canvas id="progresso-grafico-carga" height="200"></canvas>
   </div>
   <div class="flex-wrap-botoes" style="margin-top:16px">
-    <button class="btn btn-outline btn-sm" onclick="irPara('ranking')">🏆 Ranking da família</button>
-    <button class="btn btn-outline btn-sm" onclick="irPara('badges')">🎖️ Minhas conquistas</button>
-    <button class="btn btn-outline btn-sm" onclick="irPara('medidas')">📏 Medidas corporais</button>
-    <button class="btn btn-outline btn-sm" onclick="irPara('comparativo')">📈 Comparar ciclos</button>
-    <button class="btn btn-outline btn-sm" onclick="relatorio_gerarPDF()">📄 Exportar PDF</button>
+    <button class="btn btn-outline btn-sm" onclick="irPara('ranking')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0Z"/><path d="M5 6H3v2a4 4 0 0 0 4 4M19 6h2v2a4 4 0 0 1-4 4"/></svg> Ranking da família</button>
+    <button class="btn btn-outline btn-sm" onclick="irPara('badges')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M8.5 13.5 7 22l5-3 5 3-1.5-8.5"/></svg> Minhas conquistas</button>
+    <button class="btn btn-outline btn-sm" onclick="irPara('medidas')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v10H3z"/><path d="M7 7v3M11 7v5M15 7v3M19 7v5"/></svg> Medidas corporais</button>
+    <button class="btn btn-outline btn-sm" onclick="irPara('comparativo')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg> Comparar ciclos</button>
+    <button class="btn btn-outline btn-sm" onclick="relatorio_gerarPDF()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5M9 13h6M9 17h6M9 9h2"/></svg> Exportar PDF</button>
   </div>
 </div>
 
 <!-- ========== RANKING ========== -->
 <div id="secao-ranking" class="app-section">
-  <button class="btn btn-outline btn-sm" onclick="irPara('progresso')">← Voltar</button>
+  <button class="btn btn-outline btn-sm" onclick="irPara('progresso')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Voltar</button>
   <h2 style="font-family:var(--font-display);margin-top:12px">Ranking da família</h2>
   <p class="muted">Só consistência conta — nunca carga ou peso.</p>
   <div id="ranking-lista" style="margin-top:12px"></div>
@@ -132,14 +133,14 @@
 
 <!-- ========== BADGES ========== -->
 <div id="secao-badges" class="app-section">
-  <button class="btn btn-outline btn-sm" onclick="irPara('progresso')">← Voltar</button>
+  <button class="btn btn-outline btn-sm" onclick="irPara('progresso')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Voltar</button>
   <h2 style="font-family:var(--font-display);margin-top:12px">Minhas conquistas</h2>
   <div id="badges-lista" style="margin-top:12px"></div>
 </div>
 
 <!-- ========== MEDIDAS ========== -->
 <div id="secao-medidas" class="app-section">
-  <button class="btn btn-outline btn-sm" onclick="irPara('progresso')">← Voltar</button>
+  <button class="btn btn-outline btn-sm" onclick="irPara('progresso')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Voltar</button>
   <h2 style="font-family:var(--font-display);margin-top:12px">Medidas corporais</h2>
   <p class="muted">Privado — só você e o admin veem</p>
   <div class="card" style="margin-top:12px">
@@ -154,7 +155,7 @@
 
 <!-- ========== COMPARATIVO ========== -->
 <div id="secao-comparativo" class="app-section">
-  <button class="btn btn-outline btn-sm" onclick="irPara('progresso')">← Voltar</button>
+  <button class="btn btn-outline btn-sm" onclick="irPara('progresso')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Voltar</button>
   <h2 style="font-family:var(--font-display);margin-top:12px">Comparar ciclos</h2>
   <div id="comparativo-conteudo" style="margin-top:12px"></div>
 </div>
@@ -256,13 +257,13 @@
   <h2 style="font-family:var(--font-display)">Feedback</h2>
   <p class="muted">Conta pra gente o que achou ou o que poderia melhorar</p>
   <div style="margin:16px 0">
-    <span class="chip-categoria selecionada" data-categoria="sugestao" onclick="feedback_selecionarCategoria('sugestao')">💡 Sugestão</span>
-    <span class="chip-categoria" data-categoria="bug" onclick="feedback_selecionarCategoria('bug')">🐛 Bug</span>
-    <span class="chip-categoria" data-categoria="elogio" onclick="feedback_selecionarCategoria('elogio')">❤️ Elogio</span>
+    <span class="chip-categoria selecionada" data-categoria="sugestao" onclick="feedback_selecionarCategoria('sugestao')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4"/><path d="M12 2a6 6 0 0 0-4 10.5c.6.6 1 1.5 1 2.5h6c0-1 .4-1.9 1-2.5A6 6 0 0 0 12 2Z"/></svg> Sugestão</span>
+    <span class="chip-categoria" data-categoria="bug" onclick="feedback_selecionarCategoria('bug')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="8" height="10" rx="4"/><path d="M12 8V6M9 9 6 6M15 9l3-3M4 13H2M22 13h-2M4 19l3-2M20 19l-3-2"/></svg> Bug</span>
+    <span class="chip-categoria" data-categoria="elogio" onclick="feedback_selecionarCategoria('elogio')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-9.5-9C0.5 8 2 4 6 4c2 0 4 1.5 6 4 2-2.5 4-4 6-4 4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9Z"/></svg> Elogio</span>
   </div>
   <textarea class="input-demo" id="feedback-texto" rows="4" placeholder="Escreva aqui..."></textarea>
   <button class="btn btn-primary btn-full" onclick="feedback_enviar()">Enviar</button>
-  <div id="feedback-confirmacao" style="display:none;margin-top:12px" class="card">Enviado! Obrigado 🔥</div>
+  <div id="feedback-confirmacao" style="display:none;margin-top:12px" class="card"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg> Enviado! Obrigado.</div>
 </div>
 
 <!-- ========== MODAL: CHECK-IN ========== -->
@@ -309,13 +310,14 @@
 <!-- ========== MODAL: CANSAÇO ========== -->
 <div class="modal-overlay" id="modal-cansaco">
   <div class="modal-conteudo" style="text-align:center">
+    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--chama);margin-bottom:8px"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
     <strong>Como você se sentiu hoje?</strong>
-    <div style="display:flex;justify-content:center;gap:10px;margin-top:16px">
-      <button class="btn btn-outline btn-lg" onclick="execucao_confirmarCansaco(1)">😄</button>
-      <button class="btn btn-outline btn-lg" onclick="execucao_confirmarCansaco(2)">🙂</button>
-      <button class="btn btn-outline btn-lg" onclick="execucao_confirmarCansaco(3)">😐</button>
-      <button class="btn btn-outline btn-lg" onclick="execucao_confirmarCansaco(4)">😓</button>
-      <button class="btn btn-outline btn-lg" onclick="execucao_confirmarCansaco(5)">🥵</button>
+    <div class="nivel-cansaco-linha">
+      <button class="nivel-cansaco-btn" onclick="execucao_confirmarCansaco(1)"><span class="nivel-barra" style="height:20%"></span>Leve</button>
+      <button class="nivel-cansaco-btn" onclick="execucao_confirmarCansaco(2)"><span class="nivel-barra" style="height:40%"></span>Tranquilo</button>
+      <button class="nivel-cansaco-btn" onclick="execucao_confirmarCansaco(3)"><span class="nivel-barra" style="height:60%"></span>Moderado</button>
+      <button class="nivel-cansaco-btn" onclick="execucao_confirmarCansaco(4)"><span class="nivel-barra" style="height:80%"></span>Cansado</button>
+      <button class="nivel-cansaco-btn" onclick="execucao_confirmarCansaco(5)"><span class="nivel-barra" style="height:100%"></span>Exausto</button>
     </div>
     <button class="btn btn-ghost" style="margin-top:14px" onclick="execucao_confirmarCansaco(null)">Prefiro não dizer</button>
   </div>
@@ -323,11 +325,11 @@
 
 <!-- ========== TAB BAR ========== -->
 <nav class="tabbar">
-  <button class="tabbar-item active" data-secao="home" onclick="irPara('home')">🏠<span>Home</span></button>
-  <button class="tabbar-item" data-secao="treino" onclick="irPara('treino')">🏋️<span>Treino</span></button>
-  <button class="tabbar-item" data-secao="progresso" onclick="irPara('progresso')">📊<span>Progresso</span></button>
-  <button class="tabbar-item" data-secao="admin" onclick="irPara('admin')">⚙️<span>Admin</span></button>
-  <button class="tabbar-item" data-secao="feedback" onclick="irPara('feedback')">💬<span>Feedback</span></button>
+  <button class="tabbar-item active" data-secao="home" onclick="irPara('home')"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg><span>Home</span></button>
+  <button class="tabbar-item" data-secao="treino" onclick="irPara('treino')"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h4M16 12h4M8 8v8M16 8v8M2 12h2M20 12h2"/></svg><span>Treino</span></button>
+  <button class="tabbar-item" data-secao="progresso" onclick="irPara('progresso')"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10M18 20V4M6 20v-6"/></svg><span>Progresso</span></button>
+  <button class="tabbar-item" data-secao="admin" onclick="irPara('admin')"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg><span>Admin</span></button>
+  <button class="tabbar-item" data-secao="feedback" onclick="irPara('feedback')"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span>Feedback</span></button>
 </nav>
 
 <!-- ========== SCRIPTS ========== -->

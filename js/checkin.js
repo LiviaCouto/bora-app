@@ -15,10 +15,10 @@ async function checkin_iniciar() {
   const lista = document.getElementById('checkin-lista-tipos');
   lista.innerHTML = (tipos || []).map(t => `
     <button class="chip-atividade" onclick="checkin_escolherTipo('${t.id}', '${t.nome.replace(/'/g, "\\'")}')">
-      ${t.nome}
+      ${icon(t.icone || 'sparkles', 16)} ${t.nome}
     </button>
   `).join('') + `
-    <button class="chip-atividade chip-nova" onclick="checkin_abrirNovaTag()">+ Criar tag</button>
+    <button class="chip-atividade chip-nova" onclick="checkin_abrirNovaTag()">${icon('star', 16)} Criar tag</button>
   `;
 
   document.getElementById('modal-checkin').style.display = 'flex';
@@ -28,6 +28,27 @@ function checkin_fechar() {
   document.getElementById('modal-checkin').style.display = 'none';
   document.getElementById('checkin-form-livre').style.display = 'none';
   document.getElementById('checkin-lista-tipos').style.display = 'grid';
+}
+
+async function checkin_abrirNovaTag() {
+  const nome = prompt('Nome da nova tag (ex: Escalada, Skate...):');
+  if (!nome || !nome.trim()) return;
+
+  const supabase = getSupabase();
+  const perfil = AppState.perfilAtual;
+
+  const { error } = await supabase.from('tipos_atividade').insert({
+    nome: nome.trim(),
+    icone: 'sparkles',
+    perfil_criador: perfil.id,
+  });
+
+  if (error) {
+    alert('Não foi possível criar a tag.');
+    return;
+  }
+
+  checkin_iniciar(); // recarrega a lista já com a nova tag
 }
 
 let checkin_tipoSelecionadoId = null;

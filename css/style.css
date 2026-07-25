@@ -163,3 +163,59 @@ body {
 
 /* Textarea usa o mesmo estilo do input */
 textarea.input-demo { resize: vertical; font-family: var(--font-sans); }
+
+/* Seletor de nível de cansaço (substitui carinhas de emoji) */
+.nivel-cansaco-linha { display: flex; justify-content: center; gap: 10px; margin-top: 18px; }
+.nivel-cansaco-btn {
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 8px;
+  width: 52px; height: 84px; background: #fff; border: 1.5px solid var(--border-light); border-radius: var(--r-btn);
+  cursor: pointer; font-size: 10px; color: var(--text-secondary); padding: 8px 4px 6px;
+}
+.nivel-cansaco-btn:hover { border-color: var(--chama); }
+.nivel-barra { width: 14px; background: var(--chama); border-radius: 4px; display: block; }
+
+/* ===================================================================
+   RESPONSIVO — telas maiores (tablet/desktop/web)
+   O app continua "centralizado como um celular" em telas pequenas,
+   mas ganha mais respiro, colunas e uma navegação lateral fixa
+   a partir de ~720px de largura.
+=================================================================== */
+@media (min-width: 720px) {
+  body {
+    padding-bottom: 0;
+    padding-left: 220px; /* espaço pra nav lateral fixa */
+    background: var(--areia-deep);
+  }
+
+  .app-section {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 40px 32px 60px;
+    background: var(--areia);
+    min-height: 100vh;
+  }
+
+  /* Tab bar vira navegação lateral fixa à esquerda */
+  .tabbar {
+    top: 0; bottom: 0; left: 0; right: auto; width: 220px;
+    flex-direction: column; justify-content: flex-start; align-items: stretch;
+    padding: 28px 12px; gap: 4px; border-radius: 0;
+  }
+  .tabbar-item {
+    flex-direction: row; justify-content: flex-start; gap: 12px; font-size: 13px;
+    padding: 12px 14px; border-radius: var(--r-btn);
+  }
+  .tabbar-item span { font-size: 13px; }
+
+  /* Grades ganham mais colunas com a tela maior */
+  .avatar-grid { grid-template-columns: repeat(4, 1fr); }
+  .admin-tabs { flex-wrap: wrap; }
+
+  /* Modais deixam de ser "bottom sheet" e viram cartão centralizado */
+  .modal-overlay { align-items: center; }
+  .modal-conteudo { border-radius: var(--r-card-lg); max-height: 85vh; }
+}
+
+@media (min-width: 1024px) {
+  .app-section { max-width: 760px; }
+}

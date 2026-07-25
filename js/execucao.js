@@ -66,8 +66,8 @@ function execucao_renderizarExercicioAtual() {
   document.getElementById('execucao-instrucao').innerHTML =
     `Faça <strong>${fraseSeries}</strong>. Em cada série, repita o movimento de <strong>${fraseReps}</strong>.`;
 
-  document.getElementById('execucao-serie-contador').textContent =
-    `🔁 Série ${execucao_serieAtual} de ${seriesMax}`;
+  document.getElementById('execucao-serie-contador').innerHTML =
+    `${icon('repeat', 16)} Série ${execucao_serieAtual} de ${seriesMax}`;
 
   document.getElementById('execucao-aviso-descanso').style.display = 'none';
 
@@ -89,8 +89,8 @@ function execucao_terminarSerie() {
     document.getElementById('execucao-aviso-descanso-texto').textContent =
       `Descanse ${Math.round((ex.intervalo_segundos || 60) / 60) || 1} minuto antes da próxima série`;
     execucao_serieAtual++;
-    document.getElementById('execucao-serie-contador').textContent =
-      `🔁 Série ${execucao_serieAtual} de ${seriesMax}`;
+    document.getElementById('execucao-serie-contador').innerHTML =
+      `${icon('repeat', 16)} Série ${execucao_serieAtual} de ${seriesMax}`;
   } else {
     execucao_proximoExercicio();
   }

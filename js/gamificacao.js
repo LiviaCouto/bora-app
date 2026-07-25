@@ -16,11 +16,11 @@ function calcularNivel(totalCheckins) {
 }
 
 const BADGES = {
-  primeira_semana: { titulo: 'Primeira Semana', descricao: '7 check-ins seguidos', emoji: '🏁' },
-  mes_completo: { titulo: 'Mês Completo', descricao: 'Um ciclo de treino concluído', emoji: '📅' },
-  recorde_pessoal: { titulo: 'Recorde Pessoal', descricao: 'Bateu uma carga ou tempo novo', emoji: '💪' },
-  sextou_fitness: { titulo: 'Sextou Fitness', descricao: '4 sextas-feiras seguidas treinando', emoji: '🎉' },
-  time_completo: { titulo: 'Time Completo', descricao: 'Todos os perfis com check-in no mesmo dia', emoji: '👨‍👩‍👧' },
+  primeira_semana: { titulo: 'Primeira Semana', descricao: '7 check-ins seguidos', icone: 'flag' },
+  mes_completo: { titulo: 'Mês Completo', descricao: 'Um ciclo de treino concluído', icone: 'check-circle' },
+  recorde_pessoal: { titulo: 'Recorde Pessoal', descricao: 'Bateu uma carga ou tempo novo', icone: 'trending-up' },
+  sextou_fitness: { titulo: 'Sextou Fitness', descricao: '4 sextas-feiras seguidas treinando', icone: 'star' },
+  time_completo: { titulo: 'Time Completo', descricao: 'Todos os perfis com check-in no mesmo dia', icone: 'users' },
 };
 
 async function gamificacao_verificarBadges(perfilId) {

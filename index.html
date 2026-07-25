@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Bora</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0E4F4A">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ========== AUTENTICAÇÃO ========== -->
+<div id="secao-auth" class="app-section" style="display:block">
+  <div id="tela-selecao-perfil">
+    <h1 style="font-family:var(--font-display);font-size:28px;margin-bottom:4px">bora<span style="color:var(--chama)">.</span></h1>
+    <p class="muted">Quem vai treinar?</p>
+    <div id="auth-lista-perfis" class="avatar-grid"></div>
+  </div>
+
+  <div id="tela-pin" style="display:none;text-align:center">
+    <button onclick="auth_voltarSelecao()" class="btn btn-outline btn-sm" style="margin-bottom:20px">← Voltar</button>
+    <h2 style="font-family:var(--font-display)" id="auth-nome-selecionado"></h2>
+    <p class="muted">Digite seu PIN</p>
+    <div class="pin-input">
+      <div class="pin-box">_</div><div class="pin-box">_</div><div class="pin-box">_</div><div class="pin-box">_</div>
+    </div>
+    <p id="auth-erro" class="erro-msg"></p>
+    <div class="pin-teclado">
+      <button class="pin-tecla" onclick="auth_digitarPin(1)">1</button>
+      <button class="pin-tecla" onclick="auth_digitarPin(2)">2</button>
+      <button class="pin-tecla" onclick="auth_digitarPin(3)">3</button>
+      <button class="pin-tecla" onclick="auth_digitarPin(4)">4</button>
+      <button class="pin-tecla" onclick="auth_digitarPin(5)">5</button>
+      <button class="pin-tecla" onclick="auth_digitarPin(6)">6</button>
+      <button class="pin-tecla" onclick="auth_digitarPin(7)">7</button>
+      <button class="pin-tecla" onclick="auth_digitarPin(8)">8</button>
+      <button class="pin-tecla" onclick="auth_digitarPin(9)">9</button>
+      <div></div>
+      <button class="pin-tecla" onclick="auth_digitarPin(0)">0</button>
+      <button class="pin-tecla" onclick="auth_apagarPin()">⌫</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== ONBOARDING (via convite) ========== -->
+<div id="secao-onboarding" class="app-section">
+  <h2 style="font-family:var(--font-display)">Bem-vindo(a) ao Bora!</h2>
+  <p class="muted">Vamos criar seu perfil</p>
+
+  <div style="text-align:center;margin:16px 0">
+    <img id="onboarding-avatar-preview" src="icons/avatars/chama-classica.png" width="80" height="80" style="border-radius:50%">
+    <div><button class="btn btn-outline btn-sm" style="margin-top:8px" onclick="onboarding_escolherAvatar()">Escolher avatar</button></div>
+  </div>
+
+  <input class="input-demo" id="onboarding-nome" placeholder="Seu nome">
+  <input class="input-demo" id="onboarding-relacao" placeholder="Relação (ex: esposo, filha)">
+  <input class="input-demo" id="onboarding-pin" placeholder="Crie um PIN de 4 dígitos" maxlength="4">
+  <button class="btn btn-primary btn-full" onclick="onboarding_finalizar()">Criar meu perfil</button>
+</div>
+
+<!-- ========== HOME ========== -->
+<div id="secao-home" class="app-section">
+  <h2 id="home-saudacao" style="font-family:var(--font-display)"></h2>
+  <div id="home-card-treino" style="margin-top:16px"></div>
+  <div id="home-area-checkin" style="margin-top:16px"></div>
+  <div class="streak-card">
+    <div class="streak-numero" id="home-streak-numero">0</div>
+    <div>
+      <div style="font-size:13px">dias seguidos 🔥</div>
+      <div class="muted" id="home-streak-total"></div>
+    </div>
+  </div>
+  <button class="btn btn-outline btn-sm" style="margin-top:16px" onclick="dayoff_marcarHoje()">🌴 Marcar day off hoje</button>
+</div>
+
+<!-- ========== TREINO (escolha A/B) ========== -->
+<div id="secao-treino" class="app-section">
+  <h2 style="font-family:var(--font-display)">Treino de hoje</h2>
+  <div id="treino-area-escolha" style="margin-top:16px"></div>
+</div>
+
+<!-- ========== EXECUÇÃO GUIADA ========== -->
+<div id="secao-execucao" class="app-section">
+  <div id="execucao-balao-explicacao" class="balao-explicacao">
+    <strong>Série</strong> = quantas vezes você repete o exercício todo. <strong>Repetição</strong> = quantos movimentos dentro de cada série. <strong>Descanso</strong> = a pausa entre uma série e outra.
+    <div style="margin-top:8px"><button class="btn btn-outline btn-sm" onclick="execucao_fecharBalao()">Entendi</button></div>
+  </div>
+
+  <div id="execucao-conteudo">
+    <div class="execucao-card">
+      <div class="label-sol" id="execucao-progresso" style="color:var(--sol)"></div>
+      <div style="font-family:var(--font-display);font-weight:700;font-size:22px;margin-top:4px" id="execucao-nome-exercicio"></div>
+      <div id="execucao-maquina" style="font-size:12px;color:rgba(255,255,255,.7);margin-top:4px"></div>
+      <div class="execucao-instrucao-box" id="execucao-instrucao"></div>
+      <div class="execucao-serie" id="execucao-serie-contador"></div>
+      <button class="btn btn-primary btn-full" onclick="execucao_terminarSerie()">Terminei essa série</button>
+    </div>
+    <div class="toast-descanso" id="execucao-aviso-descanso">
+      ⏸️ <span id="execucao-aviso-descanso-texto"></span>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PROGRESSO ========== -->
+<div id="secao-progresso" class="app-section">
+  <h2 style="font-family:var(--font-display)">Progresso</h2>
+  <div class="card" style="margin-top:16px">
+    <div class="muted" style="margin-bottom:10px">Assiduidade (últimas ~14 semanas)</div>
+    <div class="heatmap" id="progresso-heatmap"></div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <div class="muted" style="margin-bottom:10px">Evolução de carga</div>
+    <canvas id="progresso-grafico-carga" height="200"></canvas>
+  </div>
+  <div class="flex-wrap-botoes" style="margin-top:16px">
+    <button class="btn btn-outline btn-sm" onclick="irPara('ranking')">🏆 Ranking da família</button>
+    <button class="btn btn-outline btn-sm" onclick="irPara('badges')">🎖️ Minhas conquistas</button>
+    <button class="btn btn-outline btn-sm" onclick="irPara('medidas')">📏 Medidas corporais</button>
+    <button class="btn btn-outline btn-sm" onclick="irPara('comparativo')">📈 Comparar ciclos</button>
+    <button class="btn btn-outline btn-sm" onclick="relatorio_gerarPDF()">📄 Exportar PDF</button>
+  </div>
+</div>
+
+<!-- ========== RANKING ========== -->
+<div id="secao-ranking" class="app-section">
+  <button class="btn btn-outline btn-sm" onclick="irPara('progresso')">← Voltar</button>
+  <h2 style="font-family:var(--font-display);margin-top:12px">Ranking da família</h2>
+  <p class="muted">Só consistência conta — nunca carga ou peso.</p>
+  <div id="ranking-lista" style="margin-top:12px"></div>
+</div>
+
+<!-- ========== BADGES ========== -->
+<div id="secao-badges" class="app-section">
+  <button class="btn btn-outline btn-sm" onclick="irPara('progresso')">← Voltar</button>
+  <h2 style="font-family:var(--font-display);margin-top:12px">Minhas conquistas</h2>
+  <div id="badges-lista" style="margin-top:12px"></div>
+</div>
+
+<!-- ========== MEDIDAS ========== -->
+<div id="secao-medidas" class="app-section">
+  <button class="btn btn-outline btn-sm" onclick="irPara('progresso')">← Voltar</button>
+  <h2 style="font-family:var(--font-display);margin-top:12px">Medidas corporais</h2>
+  <p class="muted">Privado — só você e o admin veem</p>
+  <div class="card" style="margin-top:12px">
+    <input class="input-demo" id="medidas-peso" placeholder="Peso (kg)" type="number" step="0.1">
+    <input class="input-demo" id="medidas-cintura" placeholder="Cintura (cm)" type="number" step="0.1">
+    <input class="input-demo" id="medidas-braco" placeholder="Braço (cm)" type="number" step="0.1">
+    <textarea class="input-demo" id="medidas-obs" rows="2" placeholder="Observação (opcional)"></textarea>
+    <button class="btn btn-primary btn-full" onclick="medidas_registrar()">Salvar</button>
+  </div>
+  <div id="medidas-historico" style="margin-top:16px"></div>
+</div>
+
+<!-- ========== COMPARATIVO ========== -->
+<div id="secao-comparativo" class="app-section">
+  <button class="btn btn-outline btn-sm" onclick="irPara('progresso')">← Voltar</button>
+  <h2 style="font-family:var(--font-display);margin-top:12px">Comparar ciclos</h2>
+  <div id="comparativo-conteudo" style="margin-top:12px"></div>
+</div>
+
+<!-- ========== ADMIN ========== -->
+<div id="secao-admin" class="app-section">
+  <h2 style="font-family:var(--font-display)">Admin</h2>
+  <div class="admin-tabs" style="flex-wrap:wrap">
+    <button class="admin-aba-botao" data-aba="perfis" onclick="admin_abrirAba('perfis')">Perfis</button>
+    <button class="admin-aba-botao" data-aba="treinos" onclick="admin_abrirAba('treinos')">Treinos</button>
+    <button class="admin-aba-botao" data-aba="familia" onclick="admin_abrirAba('familia')">Família</button>
+    <button class="admin-aba-botao" data-aba="convites" onclick="admin_abrirAba('convites')">Convites</button>
+    <button class="admin-aba-botao" data-aba="notificacoes" onclick="admin_abrirAba('notificacoes')">Notificações</button>
+  </div>
+
+  <div id="admin-aba-perfis" class="admin-aba-conteudo">
+    <div class="card">
+      <div class="muted" style="margin-bottom:8px">Novo perfil</div>
+      <div style="text-align:center;margin-bottom:10px">
+        <img id="admin-novo-perfil-avatar-preview" src="icons/avatars/chama-classica.png" width="56" height="56" style="border-radius:50%">
+        <input type="hidden" id="admin-novo-perfil-avatar-valor" value="chama-classica">
+        <div><button class="btn btn-outline btn-sm" onclick="admin_escolherAvatarNovoPerfil()">Escolher avatar</button></div>
+      </div>
+      <input class="input-demo" id="admin-novo-perfil-nome" placeholder="Nome">
+      <input class="input-demo" id="admin-novo-perfil-pin" placeholder="PIN (4 dígitos)" maxlength="4">
+      <input class="input-demo" id="admin-novo-perfil-relacao" placeholder="Relação (ex: mãe, filha, esposo)">
+      <select class="input-demo" id="admin-novo-perfil-papel">
+        <option value="usuario">Usuário</option>
+        <option value="admin">Admin</option>
+      </select>
+      <button class="btn btn-primary btn-full" onclick="admin_criarPerfil()">Criar perfil</button>
+    </div>
+    <div id="admin-lista-perfis" style="margin-top:16px"></div>
+  </div>
+
+  <div id="admin-aba-treinos" class="admin-aba-conteudo" style="display:none">
+    <select class="input-demo" id="admin-select-perfil-ciclo" onchange="admin_carregarCiclosDoPerfil()"></select>
+    <div class="card">
+      <div class="muted" style="margin-bottom:8px">Novo ciclo</div>
+      <input class="input-demo" id="admin-ciclo-responsavel" placeholder="Nome do professor (opcional)">
+      <input class="input-demo" id="admin-ciclo-cref" placeholder="CREF (opcional)">
+      <button class="btn btn-primary btn-full" onclick="admin_criarCiclo()">Criar ciclo</button>
+    </div>
+    <div id="admin-lista-ciclos" style="margin-top:16px"></div>
+
+    <div id="admin-painel-exercicios" style="display:none;margin-top:20px">
+      <div class="card">
+        <div class="muted" style="margin-bottom:8px">Colar treino (texto/MD) — parser automático</div>
+        <textarea class="input-demo" id="uploadmd-textarea" rows="6" placeholder="Cole aqui o texto do treino (ex: Treino A / * Exercício — 2 a 3 / 8 a 12 / 1 min)"></textarea>
+        <button class="btn btn-outline btn-full" onclick="uploadmd_processar()">Analisar texto</button>
+        <div id="uploadmd-preview" style="margin-top:12px"></div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="muted" style="margin-bottom:8px">Ou adicionar exercício manualmente</div>
+        <input class="input-demo" id="admin-ex-letra" placeholder="Letra do treino (A, B...)">
+        <input class="input-demo" id="admin-ex-nome" placeholder="Nome do exercício">
+        <input class="input-demo" id="admin-ex-maquina" placeholder="Nº máquina / equipamento (opcional)">
+        <div style="display:flex;gap:8px">
+          <input class="input-demo" id="admin-ex-series-min" placeholder="Séries mín" type="number">
+          <input class="input-demo" id="admin-ex-series-max" placeholder="Séries máx" type="number">
+        </div>
+        <div style="display:flex;gap:8px">
+          <input class="input-demo" id="admin-ex-reps-min" placeholder="Reps mín" type="number">
+          <input class="input-demo" id="admin-ex-reps-max" placeholder="Reps máx" type="number">
+        </div>
+        <input class="input-demo" id="admin-ex-intervalo" placeholder="Intervalo (segundos)" type="number">
+        <button class="btn btn-primary btn-full" onclick="admin_adicionarExercicio()">Adicionar exercício</button>
+      </div>
+      <div id="admin-lista-exercicios" style="margin-top:16px"></div>
+    </div>
+  </div>
+
+  <div id="admin-aba-familia" class="admin-aba-conteudo" style="display:none">
+    <div id="admin-lista-familia"></div>
+  </div>
+
+  <div id="admin-aba-convites" class="admin-aba-conteudo" style="display:none">
+    <div class="card">
+      <div class="muted" style="margin-bottom:8px">Gerar convite pra novo membro</div>
+      <input class="input-demo" id="admin-convite-nome" placeholder="Nome sugerido (opcional)">
+      <input class="input-demo" id="admin-convite-email" placeholder="E-mail (opcional)">
+      <button class="btn btn-primary btn-full" onclick="onboarding_criarConvite()">Gerar link de convite</button>
+      <div id="admin-convite-link-gerado" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <div id="admin-aba-notificacoes" class="admin-aba-conteudo" style="display:none">
+    <div class="card">
+      <p class="muted">Notificações locais (lembrete de check-in enquanto o app está aberto). Push de verdade com app fechado exige um backend futuro — ver nota em js/notificacoes.js.</p>
+      <button class="btn btn-primary" onclick="notificacoes_pedirPermissao()">Ativar notificações</button>
+      <p id="notificacoes-status" style="margin-top:8px" class="muted"></p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== FEEDBACK ========== -->
+<div id="secao-feedback" class="app-section">
+  <h2 style="font-family:var(--font-display)">Feedback</h2>
+  <p class="muted">Conta pra gente o que achou ou o que poderia melhorar</p>
+  <div style="margin:16px 0">
+    <span class="chip-categoria selecionada" data-categoria="sugestao" onclick="feedback_selecionarCategoria('sugestao')">💡 Sugestão</span>
+    <span class="chip-categoria" data-categoria="bug" onclick="feedback_selecionarCategoria('bug')">🐛 Bug</span>
+    <span class="chip-categoria" data-categoria="elogio" onclick="feedback_selecionarCategoria('elogio')">❤️ Elogio</span>
+  </div>
+  <textarea class="input-demo" id="feedback-texto" rows="4" placeholder="Escreva aqui..."></textarea>
+  <button class="btn btn-primary btn-full" onclick="feedback_enviar()">Enviar</button>
+  <div id="feedback-confirmacao" style="display:none;margin-top:12px" class="card">Enviado! Obrigado 🔥</div>
+</div>
+
+<!-- ========== MODAL: CHECK-IN ========== -->
+<div class="modal-overlay" id="modal-checkin">
+  <div class="modal-conteudo">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <strong>O que você vai fazer hoje?</strong>
+      <button onclick="checkin_fechar()" class="btn btn-outline btn-sm">Fechar</button>
+    </div>
+    <div id="checkin-lista-tipos" style="display:flex;flex-wrap:wrap"></div>
+
+    <div id="checkin-form-livre" style="display:none">
+      <h3 id="checkin-livre-titulo" style="font-family:var(--font-display)"></h3>
+      <input class="input-demo" id="checkin-duracao" placeholder="Duração (minutos)" type="number">
+      <input class="input-demo" id="checkin-distancia" placeholder="Distância em km (opcional)" type="number" step="0.1">
+      <textarea class="input-demo" id="checkin-observacao" rows="2" placeholder="Observação (opcional)"></textarea>
+      <button class="btn btn-primary btn-full" onclick="checkin_registrarLivre()">Registrar check-in</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL: AVATARES ========== -->
+<div class="modal-overlay" id="modal-avatares">
+  <div class="modal-conteudo">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <strong>Escolha seu avatar</strong>
+      <button onclick="avatares_fecharSeletor()" class="btn btn-outline btn-sm">Fechar</button>
+    </div>
+    <div id="avatares-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px"></div>
+  </div>
+</div>
+
+<!-- ========== MODAL: YOUTUBE ========== -->
+<div class="modal-overlay" id="modal-youtube">
+  <div class="modal-conteudo">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <strong>Escolha o vídeo</strong>
+      <button onclick="youtube_fechar()" class="btn btn-outline btn-sm">Fechar</button>
+    </div>
+    <div id="youtube-resultados"></div>
+  </div>
+</div>
+
+<!-- ========== MODAL: CANSAÇO ========== -->
+<div class="modal-overlay" id="modal-cansaco">
+  <div class="modal-conteudo" style="text-align:center">
+    <strong>Como você se sentiu hoje?</strong>
+    <div style="display:flex;justify-content:center;gap:10px;margin-top:16px">
+      <button class="btn btn-outline btn-lg" onclick="execucao_confirmarCansaco(1)">😄</button>
+      <button class="btn btn-outline btn-lg" onclick="execucao_confirmarCansaco(2)">🙂</button>
+      <button class="btn btn-outline btn-lg" onclick="execucao_confirmarCansaco(3)">😐</button>
+      <button class="btn btn-outline btn-lg" onclick="execucao_confirmarCansaco(4)">😓</button>
+      <button class="btn btn-outline btn-lg" onclick="execucao_confirmarCansaco(5)">🥵</button>
+    </div>
+    <button class="btn btn-ghost" style="margin-top:14px" onclick="execucao_confirmarCansaco(null)">Prefiro não dizer</button>
+  </div>
+</div>
+
+<!-- ========== TAB BAR ========== -->
+<nav class="tabbar">
+  <button class="tabbar-item active" data-secao="home" onclick="irPara('home')">🏠<span>Home</span></button>
+  <button class="tabbar-item" data-secao="treino" onclick="irPara('treino')">🏋️<span>Treino</span></button>
+  <button class="tabbar-item" data-secao="progresso" onclick="irPara('progresso')">📊<span>Progresso</span></button>
+  <button class="tabbar-item" data-secao="admin" onclick="irPara('admin')">⚙️<span>Admin</span></button>
+  <button class="tabbar-item" data-secao="feedback" onclick="irPara('feedback')">💬<span>Feedback</span></button>
+</nav>
+
+<!-- ========== SCRIPTS ========== -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-date-fns/3.0.0/chartjs-adapter-date-fns.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/state.js"></script>
+<script src="js/avatares.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/onboarding.js"></script>
+<script src="js/gamificacao.js"></script>
+<script src="js/checkin.js"></script>
+<script src="js/home.js"></script>
+<script src="js/treino.js"></script>
+<script src="js/execucao.js"></script>
+<script src="js/progresso.js"></script>
+<script src="js/ranking.js"></script>
+<script src="js/badges.js"></script>
+<script src="js/medidas.js"></script>
+<script src="js/dayoff.js"></script>
+<script src="js/uploadmd.js"></script>
+<script src="js/youtube.js"></script>
+<script src="js/notificacoes.js"></script>
+<script src="js/relatorio.js"></script>
+<script src="js/admin.js"></script>
+<script src="js/feedback.js"></script>
+
+<script>
+  window.addEventListener('load', async () => {
+    const veioDeConvite = await onboarding_verificarConviteNaURL();
+
+    if (!veioDeConvite) {
+      const perfil = carregarSessao();
+      if (perfil) {
+        irPara('home');
+        notificacoes_verificarLembreteCheckin();
+      } else {
+        irPara('auth');
+      }
+    }
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js').catch(console.error);
+    }
+  });
+</script>
+</body>
+</html>

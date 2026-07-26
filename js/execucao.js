@@ -1,16 +1,14 @@
 // ============================================================
-// BORA — Execução guiada do treino
-// Uma coisa de cada vez: nome do exercício, instrução em frase corrida,
-// contador de série, aviso textual de descanso (sem cronômetro ativo).
-// Ao concluir um exercício, volta pra checklist (treino.js cuida da lista).
+// BORA — Execução guiada do treino (simplificada: 1 clique por exercício)
+// Ao concluir um exercício, mostra tela de descanso e volta pra checklist.
 // ============================================================
 
 let execucao_indiceAtual = 0;
-let execucao_serieAtual = 1;
 
 function render_execucao() {
-  execucao_serieAtual = 1;
   document.getElementById('execucao-balao-explicacao').style.display = 'none';
+  document.getElementById('execucao-card-descanso').style.display = 'none';
+  document.getElementById('execucao-card-exercicio').style.display = 'block';
   execucao_mostrarExplicacaoPrimeiraVez();
   execucao_renderizarExercicioAtual();
 }
@@ -30,7 +28,6 @@ function execucao_fecharBalao() {
 function execucao_renderizarExercicioAtual() {
   const ex = treino_listaExercicios[execucao_indiceAtual];
   const total = treino_listaExercicios.length;
-  const seriesMax = ex.series_max || ex.series_min || 3;
 
   document.getElementById('execucao-progresso').textContent =
     `Treino ${AppState.treinoEscolhidoHoje} · Exercício ${execucao_indiceAtual + 1} de ${total}`;
@@ -44,12 +41,7 @@ function execucao_renderizarExercicioAtual() {
     : `${ex.reps_min} a ${ex.reps_max} repetições`;
 
   document.getElementById('execucao-instrucao').innerHTML =
-    `Faça <strong>${fraseSeries}</strong>. Em cada série, repita o movimento de <strong>${fraseReps}</strong>.`;
-
-  document.getElementById('execucao-serie-contador').innerHTML =
-    `${icon('repeat', 16)} Série ${execucao_serieAtual} de ${seriesMax}`;
-
-  document.getElementById('execucao-aviso-descanso').style.display = 'none';
+    `Faça <strong>${fraseSeries}</strong> de <strong>${fraseReps}</strong> cada uma.`;
 
   if (ex.numero_maquina) {
     document.getElementById('execucao-maquina').textContent = `Equipamento: ${ex.numero_maquina}`;
@@ -58,7 +50,6 @@ function execucao_renderizarExercicioAtual() {
     document.getElementById('execucao-maquina').style.display = 'none';
   }
 
-  // Vídeo do YouTube (se já vinculado a esse exercício)
   const areaVideo = document.getElementById('execucao-video');
   if (ex.video_id) {
     areaVideo.innerHTML = `
@@ -74,24 +65,13 @@ function execucao_renderizarExercicioAtual() {
   }
 }
 
-function execucao_terminarSerie() {
-  const ex = treino_listaExercicios[execucao_indiceAtual];
-  const seriesMax = ex.series_max || ex.series_min || 3;
-
-  if (execucao_serieAtual < seriesMax) {
-    document.getElementById('execucao-aviso-descanso').style.display = 'flex';
-    document.getElementById('execucao-aviso-descanso-texto').textContent =
-      `Descanse ${Math.round((ex.intervalo_segundos || 60) / 60) || 1} minuto antes da próxima série`;
-    execucao_serieAtual++;
-    document.getElementById('execucao-serie-contador').innerHTML =
-      `${icon('repeat', 16)} Série ${execucao_serieAtual} de ${seriesMax}`;
-  } else {
-    execucao_concluirExercicioAtual();
-  }
-}
-
 function execucao_concluirExercicioAtual() {
   treino_concluidos.add(execucao_indiceAtual);
+  document.getElementById('execucao-card-exercicio').style.display = 'none';
+  document.getElementById('execucao-card-descanso').style.display = 'block';
+}
+
+function execucao_continuarAposDescanso() {
   irPara('treinolista');
 }
 
@@ -102,5 +82,5 @@ function execucao_perguntarCansaco() {
 
 function execucao_confirmarCansaco(nivel) {
   document.getElementById('modal-cansaco').style.display = 'none';
-  checkin_finalizarTreino(treino_cicloAtivo.id, AppState.treinoEscolhidoHoje, nivel, treino_horaInicio, new Date().toISOString());
+  finalizar_abrirRevisao(nivel);
 }

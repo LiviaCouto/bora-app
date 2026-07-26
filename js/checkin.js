@@ -131,8 +131,8 @@ async function checkin_finalizarTreino(cicloId, letraTreino, nivelCansaco, horaI
 
   if (error) {
     alert('Não foi possível registrar o check-in de hoje (talvez já tenha feito).');
+    return;
   }
 
   await gamificacao_verificarBadges(perfil.id);
-  irPara('home');
 }

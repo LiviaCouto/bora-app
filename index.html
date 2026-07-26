@@ -72,14 +72,23 @@
   <h2 id="home-saudacao" style="font-family:var(--font-display)"></h2>
   <div id="home-card-treino" style="margin-top:16px"></div>
   <div id="home-area-checkin" style="margin-top:16px"></div>
-  <div class="streak-card">
-    <div class="streak-numero" id="home-streak-numero">0</div>
-    <div>
-      <div style="font-size:13px">dias seguidos 🔥</div>
-      <div class="muted" id="home-streak-total"></div>
-    </div>
+
+  <div class="streak-destaque">
+    <svg class="streak-destaque-chama" viewBox="0 0 100 120" fill="none">
+      <defs><linearGradient id="homeFlameGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFC93C"/><stop offset="55%" stop-color="#FF5A3C"/><stop offset="100%" stop-color="#E8431F"/></linearGradient></defs>
+      <path d="M50 5C35 25 25 40 25 60C25 85 40 100 50 100C60 100 75 85 75 60C75 45 68 35 62 28C63 40 55 45 50 40C48 30 52 15 50 5Z" fill="url(#homeFlameGrad)"/>
+    </svg>
+    <div class="streak-destaque-numero" id="home-streak-numero">0</div>
+    <div class="streak-destaque-label">dias seguidos</div>
+    <div class="streak-destaque-nivel" id="home-streak-nivel"></div>
+    <div class="streak-destaque-barra"><div class="streak-destaque-barra-preenchida" id="home-streak-barra-preenchida"></div></div>
+    <div class="muted" id="home-streak-total" style="margin-top:6px"></div>
   </div>
+
   <button class="btn btn-outline btn-sm" style="margin-top:16px" onclick="dayoff_marcarHoje()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13a3 3 0 0 1 0 6h-1"/><path d="M4 8v8a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V8"/><path d="M7 2v2M11 2v2"/></svg> Marcar day off hoje</button>
+
+  <div class="card-label" style="margin-top:24px">Seus últimos check-ins</div>
+  <div id="home-lista-checkins" style="margin-top:8px"></div>
 </div>
 
 <!-- ========== TREINO (escolha A/B) ========== -->
@@ -107,25 +116,32 @@
   </div>
 
   <div id="execucao-conteudo" style="margin-top:12px">
-    <div class="execucao-card">
+    <div class="execucao-card" id="execucao-card-exercicio">
       <div class="label-sol" id="execucao-progresso" style="color:var(--sol)"></div>
       <div style="font-family:var(--font-display);font-weight:700;font-size:22px;margin-top:4px" id="execucao-nome-exercicio"></div>
       <div id="execucao-maquina" style="font-size:12px;color:rgba(255,255,255,.7);margin-top:4px"></div>
       <div id="execucao-video" style="margin:14px 0"></div>
       <div class="execucao-instrucao-box" id="execucao-instrucao"></div>
-      <div class="execucao-serie" id="execucao-serie-contador"></div>
-      <button class="btn btn-primary btn-full" onclick="execucao_terminarSerie()">Terminei essa série</button>
+      <button class="btn btn-primary btn-full" onclick="execucao_concluirExercicioAtual()">Concluí esse exercício</button>
     </div>
-    <div class="toast-descanso" id="execucao-aviso-descanso">
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M10 9v6M14 9v6"/></svg>
-      <span id="execucao-aviso-descanso-texto"></span>
+
+    <div class="execucao-card-descanso" id="execucao-card-descanso" style="display:none">
+      <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M10 9v6M14 9v6"/></svg>
+      <div class="font-display" style="font-family:var(--font-display);font-weight:700;font-size:20px;margin:10px 0 4px">Descanse 1 minuto</div>
+      <div class="muted">Antes do próximo exercício</div>
+      <button class="btn btn-primary" style="margin-top:16px" onclick="execucao_continuarAposDescanso()">Continuar</button>
     </div>
   </div>
 </div>
 
 <!-- ========== PROGRESSO ========== -->
 <div id="secao-progresso" class="app-section">
-  <h2 style="font-family:var(--font-display)">Progresso</h2>
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h2 style="font-family:var(--font-display);margin:0">Progresso</h2>
+    <button class="btn-icone-topo" onclick="relatorio_gerarPDF()" title="Exportar PDF">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5M9 13h6M9 17h6M9 9h2"/></svg>
+    </button>
+  </div>
   <div class="card" style="margin-top:16px">
     <div class="muted" style="margin-bottom:10px">Assiduidade (últimas ~14 semanas)</div>
     <div class="heatmap" id="progresso-heatmap"></div>
@@ -139,7 +155,6 @@
     <button class="btn btn-outline btn-sm" onclick="irPara('badges')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M8.5 13.5 7 22l5-3 5 3-1.5-8.5"/></svg> Minhas conquistas</button>
     <button class="btn btn-outline btn-sm" onclick="irPara('medidas')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v10H3z"/><path d="M7 7v3M11 7v5M15 7v3M19 7v5"/></svg> Medidas corporais</button>
     <button class="btn btn-outline btn-sm" onclick="irPara('comparativo')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg> Comparar ciclos</button>
-    <button class="btn btn-outline btn-sm" onclick="relatorio_gerarPDF()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5M9 13h6M9 17h6M9 9h2"/></svg> Exportar PDF</button>
   </div>
 </div>
 
@@ -348,6 +363,32 @@
 
 <div id="toast-container" style="position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:300;width:calc(100% - 32px);max-width:380px"></div>
 
+<!-- ========== MODAL: REVISAR HORÁRIO ANTES DE SALVAR ========== -->
+<div class="modal-overlay" id="modal-finalizar">
+  <div class="modal-conteudo">
+    <strong>Revise antes de salvar</strong>
+    <p class="muted" style="margin:6px 0 16px">A gente já calculou o horário — pode ajustar se quiser.</p>
+    <div class="input-wrap">
+      <label class="input-label">Início</label>
+      <input class="input-demo" type="time" id="finalizar-hora-inicio">
+    </div>
+    <div class="input-wrap">
+      <label class="input-label">Fim</label>
+      <input class="input-demo" type="time" id="finalizar-hora-fim">
+    </div>
+    <button class="btn btn-primary btn-full" onclick="finalizar_salvarTreino()">Salvar treino</button>
+  </div>
+</div>
+
+<!-- ========== MODAL: CELEBRAÇÃO ========== -->
+<div class="modal-overlay" id="modal-celebracao">
+  <div class="modal-conteudo" style="text-align:center">
+    <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="var(--chama)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C9 6 7 9 7 13a5 5 0 0 0 10 0c0-2-1-3.5-2-5 .2 2-1 3-2 2-.5-2 .5-5-1-8Z"/></svg>
+    <div style="font-family:var(--font-display);font-weight:700;font-size:22px;margin-top:10px">Treino concluído! 🔥</div>
+    <p class="muted">Bora ver seu progresso...</p>
+  </div>
+</div>
+
 <!-- ========== TAB BAR ========== -->
 <nav class="tabbar">
   <div class="tabbar-logo"><img src="icons/logo-bora-simbolo.png" alt="Bora"></div>
@@ -373,9 +414,11 @@
 <script src="js/onboarding.js"></script>
 <script src="js/gamificacao.js"></script>
 <script src="js/checkin.js"></script>
+<script src="js/frases.js"></script>
 <script src="js/home.js"></script>
 <script src="js/treino.js"></script>
 <script src="js/execucao.js"></script>
+<script src="js/finalizar.js"></script>
 <script src="js/progresso.js"></script>
 <script src="js/ranking.js"></script>
 <script src="js/badges.js"></script>

@@ -38,6 +38,10 @@ async function render_treino() {
     .eq('ciclo_id', ciclo.id);
 
   const letras = [...new Set((exercicios || []).map(e => e.letra_treino))].sort();
+  const contagemPorLetra = {};
+  (exercicios || []).forEach(e => {
+    contagemPorLetra[e.letra_treino] = (contagemPorLetra[e.letra_treino] || 0) + 1;
+  });
 
   if (letras.length === 0) {
     area.innerHTML = `
@@ -50,9 +54,16 @@ async function render_treino() {
 
   area.innerHTML = `
     <p class="muted" style="margin-bottom:16px">Qual treino você vai fazer hoje?</p>
-    <div class="flex-wrap-botoes">
+    <div class="grade-treinos">
       ${letras.map(l => `
-        <button class="btn btn-primary btn-lg" onclick="treino_abrirLista('${l}')">Treino ${l}</button>
+        <button class="card-treino-opcao" onclick="treino_abrirLista('${l}')">
+          <div class="card-treino-opcao-letra">${l}</div>
+          <div class="card-treino-opcao-texto">
+            <strong>Treino ${l}</strong>
+            <span class="muted">${contagemPorLetra[l] || 0} exercícios</span>
+          </div>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
       `).join('')}
     </div>
   `;

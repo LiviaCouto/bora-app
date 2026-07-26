@@ -178,7 +178,7 @@ async function onboarding_finalizar() {
 
   setTimeout(() => {
     document.getElementById('modal-boasvindas').style.display = 'none';
-    irPara('home');
+    irPara('meutreino');
   }, 2400);
 }
 

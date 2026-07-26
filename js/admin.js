@@ -24,6 +24,7 @@ function admin_abrirAba(aba) {
   if (aba === 'familia') admin_visaoFamilia();
   if (aba === 'convites') onboarding_listarConvites();
   if (aba === 'feedbacks') admin_listarFeedbacks();
+  if (aba === 'fotos') admin_listarFotosTreino();
 }
 
 // ---------- PERFIS ----------
@@ -268,6 +269,40 @@ function admin_ativarAvisoTempoReal() {
       mostrarToast('Novo membro no Bora!', `${payload.new.nome} acabou de criar o perfil.`);
     })
     .subscribe();
+
+  supabase
+    .channel('novas-fotos')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'fotos_treino' }, async (payload) => {
+      const { data: perfilDaFoto } = await supabase.from('perfis').select('nome').eq('id', payload.new.perfil_id).maybeSingle();
+      mostrarToast('Nova foto de treino!', `${perfilDaFoto ? perfilDaFoto.nome : 'Alguém'} enviou uma foto pra você cadastrar.`);
+      admin_atualizarBadgeFotos();
+    })
+    .subscribe();
+
+  admin_atualizarBadgeFotos();
+}
+
+async function admin_atualizarBadgeFotos() {
+  const supabase = getSupabase();
+  const { count } = await supabase
+    .from('fotos_treino')
+    .select('id', { count: 'exact', head: true })
+    .eq('status', 'pendente');
+
+  const botao = document.querySelector('.admin-aba-botao[data-aba="fotos"]');
+  if (!botao) return;
+
+  let selo = botao.querySelector('.selo-contagem');
+  if (count > 0) {
+    if (!selo) {
+      selo = document.createElement('span');
+      selo.className = 'selo-contagem';
+      botao.appendChild(selo);
+    }
+    selo.textContent = count;
+  } else if (selo) {
+    selo.remove();
+  }
 }
 
 // ---------- Visão da família ----------

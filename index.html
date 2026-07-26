@@ -142,6 +142,7 @@
   <div id="meutreino-painel-exercicios" style="display:none;margin-top:20px">
     <div class="card">
       <div class="muted" style="margin-bottom:8px">Adicionar exercício</div>
+      <button class="btn btn-outline btn-full" style="margin-bottom:10px" onclick="meutreino_escolherDaBiblioteca()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg> Escolher da biblioteca</button>
       <input class="input-demo" id="meutreino-ex-letra" placeholder="Letra do treino (A, B...)">
       <input class="input-demo" id="meutreino-ex-nome" placeholder="Nome do exercício">
       <input class="input-demo" id="meutreino-ex-maquina" placeholder="Nº máquina / equipamento (opcional)">
@@ -157,6 +158,14 @@
       <button class="btn btn-primary btn-full" onclick="meutreino_adicionarExercicio()">Adicionar exercício</button>
     </div>
     <div id="meutreino-lista-exercicios" style="margin-top:16px"></div>
+  </div>
+
+  <div class="card-label" style="margin-top:24px">Ou envie a foto do treino em papel</div>
+  <div class="card" style="margin-top:8px">
+    <p class="muted" style="margin-bottom:10px">Sem leitor automático ainda — a foto fica pendente pro admin cadastrar seu treino a partir dela.</p>
+    <input type="file" accept="image/*" capture="environment" id="fototreino-input" class="input-demo">
+    <button class="btn btn-outline btn-full" onclick="fototreino_enviar()">Enviar foto</button>
+    <p id="fototreino-status" class="muted" style="margin-top:8px"></p>
   </div>
 </div>
 
@@ -284,6 +293,7 @@
     <button class="admin-aba-botao" data-aba="familia" onclick="admin_abrirAba('familia')">Família</button>
     <button class="admin-aba-botao" data-aba="convites" onclick="admin_abrirAba('convites')">Convites</button>
     <button class="admin-aba-botao" data-aba="feedbacks" onclick="admin_abrirAba('feedbacks')">Feedbacks</button>
+    <button class="admin-aba-botao" data-aba="fotos" onclick="admin_abrirAba('fotos')">Fotos</button>
   </div>
 
   <div id="admin-aba-perfis" class="admin-aba-conteudo">
@@ -348,6 +358,10 @@
 
   <div id="admin-aba-feedbacks" class="admin-aba-conteudo" style="display:none">
     <div id="admin-lista-feedbacks"></div>
+  </div>
+
+  <div id="admin-aba-fotos" class="admin-aba-conteudo" style="display:none">
+    <div id="admin-lista-fotos"></div>
   </div>
 
 </div>
@@ -461,6 +475,19 @@
   </div>
 </div>
 
+<!-- ========== MODAL: BIBLIOTECA DE EXERCÍCIOS ========== -->
+<div class="modal-overlay" id="modal-biblioteca">
+  <div class="modal-conteudo">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <strong>Escolher exercício</strong>
+      <button onclick="biblioteca_fecharSeletor()" class="btn btn-outline btn-sm">Fechar</button>
+    </div>
+    <input class="input-demo" id="biblioteca-busca" placeholder="Buscar exercício..." oninput="biblioteca_filtrar()">
+    <div id="biblioteca-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin:10px 0"></div>
+    <div id="biblioteca-lista"></div>
+  </div>
+</div>
+
 <!-- ========== TAB BAR ========== -->
 <nav class="tabbar">
   <div class="tabbar-logo"><img src="icons/logo-bora-simbolo.png" alt="Bora"></div>
@@ -488,6 +515,8 @@
 <script src="js/home.js"></script>
 <script src="js/treino.js"></script>
 <script src="js/meutreino.js"></script>
+<script src="js/biblioteca.js"></script>
+<script src="js/fototreino.js"></script>
 <script src="js/execucao.js"></script>
 <script src="js/finalizar.js"></script>
 <script src="js/progresso.js"></script>

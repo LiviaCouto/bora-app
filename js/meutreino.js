@@ -5,6 +5,14 @@
 // ============================================================
 
 let meutreino_cicloEmEdicao = null;
+let meutreino_bibliotecaIdSelecionado = null;
+
+function meutreino_escolherDaBiblioteca() {
+  biblioteca_abrirSeletor((id, nome) => {
+    meutreino_bibliotecaIdSelecionado = id;
+    document.getElementById('meutreino-ex-nome').value = nome;
+  });
+}
 
 async function render_meutreino() {
   const perfil = AppState.perfilAtual;
@@ -107,6 +115,7 @@ async function meutreino_adicionarExercicio() {
   const { error } = await supabase.from('exercicios').insert({
     ciclo_id: meutreino_cicloEmEdicao,
     letra_treino: letra,
+    biblioteca_exercicio_id: meutreino_bibliotecaIdSelecionado,
     nome,
     numero_maquina: numeroMaquina || null,
     series_min: seriesMin,
@@ -123,6 +132,7 @@ async function meutreino_adicionarExercicio() {
 
   document.getElementById('meutreino-ex-nome').value = '';
   document.getElementById('meutreino-ex-maquina').value = '';
+  meutreino_bibliotecaIdSelecionado = null;
   meutreino_listarExercicios();
 }
 

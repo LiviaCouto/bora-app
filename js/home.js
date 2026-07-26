@@ -6,6 +6,8 @@ async function render_home() {
   const perfil = AppState.perfilAtual;
   if (!perfil) { irPara('auth'); return; }
 
+  if (perfil.papel === 'admin') admin_ativarAvisoTempoReal();
+
   document.getElementById('home-saudacao').textContent = `Oi, ${perfil.nome}!`;
 
   const supabase = getSupabase();

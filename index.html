@@ -4,7 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Bora</title>
+<link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0E4F4A">
 <link rel="stylesheet" href="css/style.css">
 </head>
@@ -13,8 +16,10 @@
 <!-- ========== AUTENTICAÇÃO ========== -->
 <div id="secao-auth" class="app-section" style="display:block">
   <div id="tela-selecao-perfil">
-    <h1 style="font-family:var(--font-display);font-size:28px;margin-bottom:4px">bora<span style="color:var(--chama)">.</span></h1>
-    <p class="muted">Quem vai treinar?</p>
+    <div style="text-align:center;margin-bottom:8px">
+      <img src="icons/logo-bora-completo.png" alt="Bora" style="width:200px;max-width:70%">
+    </div>
+    <p class="muted" style="text-align:center">Quem vai treinar?</p>
     <div id="auth-lista-perfis" class="avatar-grid"></div>
   </div>
 
@@ -45,8 +50,11 @@
 
 <!-- ========== ONBOARDING (via convite) ========== -->
 <div id="secao-onboarding" class="app-section">
-  <h2 style="font-family:var(--font-display)">Bem-vindo(a) ao Bora!</h2>
-  <p class="muted">Vamos criar seu perfil</p>
+  <div style="text-align:center;margin-bottom:4px">
+    <img src="icons/logo-bora-simbolo.png" alt="Bora" style="width:90px">
+  </div>
+  <h2 style="font-family:var(--font-display);text-align:center">Bem-vindo(a) ao Bora!</h2>
+  <p class="muted" style="text-align:center">Vamos criar seu perfil</p>
 
   <div style="text-align:center;margin:16px 0">
     <img id="onboarding-avatar-preview" src="icons/avatars/chama-classica.png" width="80" height="80" style="border-radius:50%">
@@ -241,6 +249,8 @@
       <button class="btn btn-primary btn-full" onclick="onboarding_criarConvite()">Gerar link de convite</button>
       <div id="admin-convite-link-gerado" style="margin-top:12px"></div>
     </div>
+    <div class="card-label" style="margin-top:20px">Convites já enviados</div>
+    <div id="admin-lista-convites" style="margin-top:8px"></div>
   </div>
 
   <div id="admin-aba-notificacoes" class="admin-aba-conteudo" style="display:none">
@@ -323,8 +333,11 @@
   </div>
 </div>
 
+<div id="toast-container" style="position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:300;width:calc(100% - 32px);max-width:380px"></div>
+
 <!-- ========== TAB BAR ========== -->
 <nav class="tabbar">
+  <div class="tabbar-logo"><img src="icons/logo-bora-simbolo.png" alt="Bora"></div>
   <button class="tabbar-item active" data-secao="home" onclick="irPara('home')"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg><span>Home</span></button>
   <button class="tabbar-item" data-secao="treino" onclick="irPara('treino')"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h4M16 12h4M8 8v8M16 8v8M2 12h2M20 12h2"/></svg><span>Treino</span></button>
   <button class="tabbar-item" data-secao="progresso" onclick="irPara('progresso')"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10M18 20V4M6 20v-6"/></svg><span>Progresso</span></button>

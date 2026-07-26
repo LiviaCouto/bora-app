@@ -76,3 +76,14 @@ const ICONS = {
 function icon(name, size = 20) {
   return `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name] || ''}</svg>`;
 }
+
+// Toast visual simples (não é notificação do sistema, só um aviso na tela)
+function mostrarToast(titulo, descricao) {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+  const el = document.createElement('div');
+  el.className = 'toast toast-success';
+  el.innerHTML = `<div><div class="toast-title">${titulo}</div><div class="toast-desc">${descricao}</div></div>`;
+  container.appendChild(el);
+  setTimeout(() => el.remove(), 5000);
+}

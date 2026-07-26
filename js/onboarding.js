@@ -35,15 +35,35 @@ async function onboarding_criarConvite() {
   }
 
   const link = `${window.location.origin}${window.location.pathname}?convite=${token}`;
+  const mensagem = encodeURIComponent(`Oi! Entra no Bora (nosso app de treino) por esse link: ${link}`);
+
   document.getElementById('admin-convite-link-gerado').innerHTML = `
     <div class="admin-item-linha">
       <input class="input-demo" style="margin:0" readonly value="${link}" onclick="this.select()">
     </div>
     <div class="flex-wrap-botoes" style="margin-top:8px">
-      <button class="btn btn-outline btn-sm" onclick="navigator.clipboard.writeText('${link}')">Copiar link</button>
-      <a class="btn btn-outline btn-sm" href="mailto:${email}?subject=Convite para o Bora&body=Oi! Entra no Bora pelo link: ${encodeURIComponent(link)}">Abrir e-mail</a>
+      <button class="btn btn-outline btn-sm" onclick="navigator.clipboard.writeText('${link}')">${icon('copy', 14)} Copiar link</button>
+      <a class="btn btn-primary btn-sm" href="https://wa.me/?text=${mensagem}" target="_blank">${icon('message-square', 14)} Enviar por WhatsApp</a>
+      <a class="btn btn-outline btn-sm" href="mailto:${email}?subject=Convite para o Bora&body=${mensagem}">${icon('mail', 14)} Abrir e-mail</a>
     </div>
   `;
+
+  onboarding_listarConvites();
+}
+
+async function onboarding_listarConvites() {
+  const supabase = getSupabase();
+  const { data } = await supabase.from('convites').select('*').order('criado_em', { ascending: false });
+
+  const container = document.getElementById('admin-lista-convites');
+  if (!container) return;
+
+  container.innerHTML = (data || []).map(c => `
+    <div class="admin-item-linha">
+      <div>${c.nome_sugerido || c.email || 'Convite sem nome'}<div class="muted">${c.criado_em ? formatarDataBR(c.criado_em.split('T')[0]) : ''}</div></div>
+      <span class="badge ${c.usado ? 'badge-success' : 'badge-neutral'}">${c.usado ? 'Aceito' : 'Pendente'}</span>
+    </div>
+  `).join('') || '<p class="muted">Nenhum convite gerado ainda.</p>';
 }
 
 // ---------- Tela de aceite do convite ----------

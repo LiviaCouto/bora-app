@@ -22,6 +22,7 @@ function admin_abrirAba(aba) {
   if (aba === 'perfis') admin_listarPerfis();
   if (aba === 'treinos') admin_listarPerfisParaCiclo();
   if (aba === 'familia') admin_visaoFamilia();
+  if (aba === 'convites') onboarding_listarConvites();
 }
 
 // ---------- PERFIS ----------
@@ -207,6 +208,26 @@ async function admin_apagarExercicio(id) {
 }
 
 // ---------- VISÃO DA FAMÍLIA ----------
+
+// ---------- Aviso em tempo real (só enquanto o app está aberto) ----------
+
+let admin_canalTempoReal = null;
+
+function admin_ativarAvisoTempoReal() {
+  if (admin_canalTempoReal) return; // já está ativo, não duplica
+  const supabase = getSupabase();
+
+  admin_canalTempoReal = supabase
+    .channel('novos-perfis')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'perfis' }, (payload) => {
+      const perfilAtual = AppState.perfilAtual;
+      if (perfilAtual && payload.new.id === perfilAtual.id) return; // não avisa sobre si mesmo
+      mostrarToast('Novo membro no Bora!', `${payload.new.nome} acabou de criar o perfil.`);
+    })
+    .subscribe();
+}
+
+// ---------- Visão da família ----------
 
 async function admin_visaoFamilia() {
   const supabase = getSupabase();

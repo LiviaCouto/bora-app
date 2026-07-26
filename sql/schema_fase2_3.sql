@@ -7,7 +7,7 @@
 -- ---------- FASE 2 ----------
 
 -- Avatares fixos (armazenamos só o id do arquivo estático em icons/avatars/)
-alter table perfis alter column avatar_id set default 'chama-classica';
+alter table perfis alter column avatar_id set default 'coelha-halteres';
 
 -- Campo pra saber quando o vídeo de um exercício foi confirmado (Fase 2 - YouTube)
 alter table biblioteca_exercicios add column if not exists video_confirmado boolean default false;

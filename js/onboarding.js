@@ -69,7 +69,7 @@ async function onboarding_listarConvites() {
 // ---------- Tela de aceite do convite ----------
 
 let onboarding_conviteAtual = null;
-let onboarding_avatarEscolhido = 'chama-classica';
+let onboarding_avatarEscolhido = 'coelha-halteres';
 
 async function onboarding_verificarConviteNaURL() {
   const params = new URLSearchParams(window.location.search);
@@ -101,8 +101,8 @@ async function onboarding_verificarConviteNaURL() {
 }
 
 function render_onboarding() {
-  onboarding_avatarEscolhido = 'chama-classica';
-  document.getElementById('onboarding-avatar-preview').src = 'icons/avatars/chama-classica.png';
+  onboarding_avatarEscolhido = 'coelha-halteres';
+  document.getElementById('onboarding-avatar-preview').src = 'icons/avatars/coelha-halteres.png';
   document.getElementById('onboarding-pin').value = '';
 }
 

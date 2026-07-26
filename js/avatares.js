@@ -5,8 +5,8 @@
 // ============================================================
 
 const AVATARES_DISPONIVEIS = [
-  'chama-classica', 'chama-sol', 'mare-circulo', 'frevo-circulo',
-  'raio-energia', 'estrela-sol', 'onda-mare', 'verde-check',
+  'coelha-halteres', 'raposa-halteres', 'onca-forte', 'leoa-agua',
+  'lobo-determinado', 'touro-halteres', 'urso-shake', 'aguia-positiva',
 ];
 
 let avatares_callbackSelecao = null;
@@ -33,6 +33,6 @@ function avatares_fecharSeletor() {
 
 // Helper usado em qualquer tela que precise mostrar o avatar de um perfil
 function avatares_img(avatarId, tamanho = 48) {
-  const id = avatarId || 'chama-classica';
+  const id = avatarId || 'coelha-halteres';
   return `<img src="icons/avatars/${id}.png" width="${tamanho}" height="${tamanho}" style="border-radius:50%" alt="avatar">`;
 }

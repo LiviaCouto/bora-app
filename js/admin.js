@@ -45,7 +45,7 @@ async function admin_criarPerfil() {
   const pin = document.getElementById('admin-novo-perfil-pin').value.trim();
   const relacao = document.getElementById('admin-novo-perfil-relacao').value.trim();
   const papel = document.getElementById('admin-novo-perfil-papel').value;
-  const avatarId = document.getElementById('admin-novo-perfil-avatar-valor').value || 'chama-classica';
+  const avatarId = document.getElementById('admin-novo-perfil-avatar-valor').value || 'coelha-halteres';
 
   if (!nome || pin.length !== 4) {
     alert('Preencha o nome e um PIN de 4 dígitos.');
@@ -64,8 +64,8 @@ async function admin_criarPerfil() {
 
   document.getElementById('admin-novo-perfil-nome').value = '';
   document.getElementById('admin-novo-perfil-pin').value = '';
-  document.getElementById('admin-novo-perfil-avatar-valor').value = 'chama-classica';
-  document.getElementById('admin-novo-perfil-avatar-preview').src = 'icons/avatars/chama-classica.png';
+  document.getElementById('admin-novo-perfil-avatar-valor').value = 'coelha-halteres';
+  document.getElementById('admin-novo-perfil-avatar-preview').src = 'icons/avatars/coelha-halteres.png';
   admin_listarPerfis();
 }
 

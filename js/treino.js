@@ -1,11 +1,16 @@
 // ============================================================
 // BORA — Escolha do treino do dia (A/B) + checklist de exercícios
+// Regra importante: se o ciclo só tem UM treino dentro dele (sem
+// divisão A/B de verdade), pula direto pro checklist de exercícios
+// e mostra o NOME que a pessoa deu ao ciclo — nunca "Treino A" à toa.
 // ============================================================
 
 let treino_cicloAtivo = null;
 let treino_listaExercicios = [];
 let treino_concluidos = new Set(); // índices já finalizados nesta sessão
 let treino_horaInicio = null;
+let treino_ciclosAtivos = [];
+let treino_totalLetrasNoCiclo = 1;
 
 async function render_treino() {
   const perfil = AppState.perfilAtual;
@@ -19,6 +24,7 @@ async function render_treino() {
     .order('data_inicio', { ascending: false });
 
   const area = document.getElementById('treino-area-escolha');
+  treino_ciclosAtivos = ciclos || [];
 
   if (!ciclos || ciclos.length === 0) {
     area.innerHTML = `
@@ -49,10 +55,7 @@ async function render_treino() {
       `).join('')}
     </div>
   `;
-  treino_ciclosAtivos = ciclos;
 }
-
-let treino_ciclosAtivos = [];
 
 function treino_selecionarCicloPorIndice(i) {
   treino_selecionarCiclo(treino_ciclosAtivos[i]);
@@ -68,10 +71,7 @@ async function treino_selecionarCiclo(ciclo) {
     .eq('ciclo_id', ciclo.id);
 
   const letras = [...new Set((exercicios || []).map(e => e.letra_treino))].sort();
-  const contagemPorLetra = {};
-  (exercicios || []).forEach(e => {
-    contagemPorLetra[e.letra_treino] = (contagemPorLetra[e.letra_treino] || 0) + 1;
-  });
+  treino_totalLetrasNoCiclo = letras.length;
 
   const area = document.getElementById('treino-area-escolha');
 
@@ -84,8 +84,20 @@ async function treino_selecionarCiclo(ciclo) {
     return;
   }
 
+  // Só UM treino dentro do ciclo (o caso mais comum agora) — pula
+  // direto pro checklist, sem mostrar uma tela de escolha com 1 opção só.
+  if (letras.length === 1) {
+    await treino_abrirLista(letras[0]);
+    return;
+  }
+
+  const contagemPorLetra = {};
+  (exercicios || []).forEach(e => {
+    contagemPorLetra[e.letra_treino] = (contagemPorLetra[e.letra_treino] || 0) + 1;
+  });
+
   area.innerHTML = `
-    <p class="muted" style="margin-bottom:16px">${treino_ciclosAtivos.length > 1 ? (treino_cicloAtivo.nome_ciclo || 'Ciclo') + ' — qual treino?' : 'Qual treino você vai fazer hoje?'}</p>
+    <p class="muted" style="margin-bottom:16px">${treino_cicloAtivo.nome_ciclo || 'Ciclo'} — qual treino?</p>
     <div class="grade-treinos">
       ${letras.map(l => `
         <button class="card-treino-opcao" onclick="treino_abrirLista('${l}')">
@@ -124,7 +136,13 @@ function render_treinolista() {
   const total = treino_listaExercicios.length;
   const feitos = treino_concluidos.size;
 
-  document.getElementById('treinolista-titulo').textContent = `Treino ${letra}`;
+  // Só mostra "Treino A/B" quando o ciclo REALMENTE tem mais de um treino
+  // dentro dele. Se for só um, mostra o nome que a pessoa deu ao ciclo.
+  const titulo = treino_totalLetrasNoCiclo > 1
+    ? `Treino ${letra}`
+    : (treino_cicloAtivo.nome_ciclo || `Treino ${letra}`);
+
+  document.getElementById('treinolista-titulo').textContent = titulo;
   document.getElementById('treinolista-progresso').textContent = `${feitos} de ${total} concluídos`;
 
   document.getElementById('treinolista-itens').innerHTML = treino_listaExercicios.map((ex, i) => {

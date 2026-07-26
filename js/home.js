@@ -8,7 +8,8 @@ async function render_home() {
 
   if (perfil.papel === 'admin') admin_ativarAvisoTempoReal();
 
-  document.getElementById('home-saudacao').textContent = `Oi, ${perfil.nome}!`;
+  document.getElementById('home-saudacao').innerHTML =
+    `<span style="display:inline-flex;align-items:center;gap:10px">${avatares_img(perfil.avatar_id, 40)} Oi, ${perfil.nome}!</span>`;
 
   const supabase = getSupabase();
   const hoje = todayLocal();
@@ -49,7 +50,9 @@ async function render_home() {
           <div class="titulo-home">Day off marcado</div>
         </div>
       </div>`;
-    areaCheckin.innerHTML = '';
+    areaCheckin.innerHTML = `
+      <button class="btn btn-outline btn-full" onclick="dayoff_removerHoje()">Marquei sem querer, remover</button>
+    `;
   } else {
     areaCard.innerHTML = `
       <div class="card-treino-home">

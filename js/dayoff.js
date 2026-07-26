@@ -18,7 +18,23 @@ async function dayoff_marcarHoje() {
     return;
   }
 
-  alert('Day off registrado. Sua sequência não vai quebrar por hoje.');
+  render_home();
+}
+
+async function dayoff_removerHoje() {
+  const perfil = AppState.perfilAtual;
+  const supabase = getSupabase();
+  const { error } = await supabase
+    .from('dias_pausa')
+    .delete()
+    .eq('perfil_id', perfil.id)
+    .eq('data', todayLocal());
+
+  if (error) {
+    alert('Não foi possível remover o day off.');
+    return;
+  }
+
   render_home();
 }
 

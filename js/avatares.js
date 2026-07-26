@@ -33,6 +33,8 @@ function avatares_fecharSeletor() {
 
 // Helper usado em qualquer tela que precise mostrar o avatar de um perfil
 function avatares_img(avatarId, tamanho = 48) {
-  const id = avatarId || 'coelha-halteres';
-  return `<img src="icons/avatars/${id}.png" width="${tamanho}" height="${tamanho}" style="border-radius:50%;object-fit:cover" alt="avatar">`;
+  if (!avatarId) {
+    return `<img src="icons/logo-bora-simbolo.png" width="${tamanho}" height="${tamanho}" style="border-radius:50%;object-fit:cover;background:var(--areia-deep)" alt="avatar">`;
+  }
+  return `<img src="icons/avatars/${avatarId}.png" width="${tamanho}" height="${tamanho}" style="border-radius:50%;object-fit:cover" alt="avatar">`;
 }

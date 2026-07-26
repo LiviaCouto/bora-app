@@ -1,79 +1,79 @@
 // ============================================================
-// BORA — Progresso (assiduidade + evolução de carga)
+// BORA — Progresso (calendário mensal de assiduidade)
 // ============================================================
 
+let progresso_anoExibido;
+let progresso_mesExibido; // 0-indexado (0 = janeiro)
+
+const NOMES_MES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+
 async function render_progresso() {
+  const hoje = new Date();
+  progresso_anoExibido = hoje.getFullYear();
+  progresso_mesExibido = hoje.getMonth();
+  await progresso_renderizarCalendario();
+}
+
+async function progresso_renderizarCalendario() {
   const perfil = AppState.perfilAtual;
   const supabase = getSupabase();
+
+  const ultimoDiaMes = new Date(progresso_anoExibido, progresso_mesExibido + 1, 0).getDate();
+  const mesStr = String(progresso_mesExibido + 1).padStart(2, '0');
+  const inicioStr = `${progresso_anoExibido}-${mesStr}-01`;
+  const fimStr = `${progresso_anoExibido}-${mesStr}-${String(ultimoDiaMes).padStart(2, '0')}`;
 
   const { data: checkins } = await supabase
     .from('checkins')
     .select('data')
     .eq('perfil_id', perfil.id)
-    .order('data', { ascending: false })
-    .limit(98); // ~14 semanas
+    .gte('data', inicioStr)
+    .lte('data', fimStr);
 
-  progresso_renderizarHeatmap(checkins || []);
+  const diasComCheckin = new Set((checkins || []).map(c => c.data));
 
-  const { data: cargas } = await supabase
-    .from('progresso_cargas')
-    .select('*')
-    .eq('perfil_id', perfil.id)
-    .order('data');
+  document.getElementById('progresso-mes-titulo').textContent =
+    `${NOMES_MES[progresso_mesExibido]} ${progresso_anoExibido}`;
 
-  progresso_renderizarGraficoCarga(cargas || []);
-}
-
-function progresso_renderizarHeatmap(checkins) {
-  const datasComCheckin = new Set(checkins.map(c => c.data));
-  const container = document.getElementById('progresso-heatmap');
-  let html = '';
-
+  const primeiroDiaSemana = new Date(progresso_anoExibido, progresso_mesExibido, 1).getDay();
   const hoje = new Date();
-  for (let i = 97; i >= 0; i--) {
-    const d = new Date(hoje);
-    d.setDate(d.getDate() - i);
-    const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    const ativo = datasComCheckin.has(iso);
-    html += `<div class="heatmap-dia ${ativo ? 'ativo' : ''}" title="${formatarDataBR(iso)}"></div>`;
+  const ehMesAtual = progresso_anoExibido === hoje.getFullYear() && progresso_mesExibido === hoje.getMonth();
+
+  let html = '';
+  for (let i = 0; i < primeiroDiaSemana; i++) {
+    html += '<div class="calendario-dia vazio"></div>';
   }
-  container.innerHTML = html;
+  for (let d = 1; d <= ultimoDiaMes; d++) {
+    const dataStr = `${progresso_anoExibido}-${mesStr}-${String(d).padStart(2, '0')}`;
+    const marcado = diasComCheckin.has(dataStr);
+    const futuro = ehMesAtual && d > hoje.getDate();
+    const ehHoje = ehMesAtual && d === hoje.getDate();
+    html += `<div class="calendario-dia ${marcado ? 'marcado' : ''} ${futuro ? 'futuro' : ''} ${ehHoje ? 'hoje' : ''}">${d}</div>`;
+  }
+  document.getElementById('progresso-calendario-dias').innerHTML = html;
+
+  const podeAvancar = !ehMesAtual;
+  const setaFrente = document.getElementById('progresso-seta-frente');
+  setaFrente.style.visibility = podeAvancar ? 'visible' : 'hidden';
 }
 
-let progresso_chart = null;
-
-function progresso_renderizarGraficoCarga(cargas) {
-  const canvas = document.getElementById('progresso-grafico-carga');
-  if (!canvas || typeof Chart === 'undefined') return;
-
-  if (cargas.length === 0) {
-    canvas.parentElement.innerHTML = '<p class="muted">Ainda não há histórico de carga registrado.</p>';
-    return;
+function progresso_mesAnterior() {
+  progresso_mesExibido--;
+  if (progresso_mesExibido < 0) {
+    progresso_mesExibido = 11;
+    progresso_anoExibido--;
   }
+  progresso_renderizarCalendario();
+}
 
-  const porExercicio = {};
-  cargas.forEach(c => {
-    if (!porExercicio[c.exercicio_nome]) porExercicio[c.exercicio_nome] = [];
-    porExercicio[c.exercicio_nome].push({ x: c.data, y: c.carga_kg });
-  });
-
-  if (progresso_chart) progresso_chart.destroy();
-
-  const cores = ['#FF5A3C', '#0E4F4A', '#FFC93C', '#E63977'];
-  const datasets = Object.keys(porExercicio).map((nome, i) => ({
-    label: nome,
-    data: porExercicio[nome],
-    borderColor: cores[i % cores.length],
-    backgroundColor: cores[i % cores.length],
-    tension: 0.3,
-  }));
-
-  progresso_chart = new Chart(canvas, {
-    type: 'line',
-    data: { datasets },
-    options: {
-      responsive: true,
-      scales: { x: { type: 'time', time: { unit: 'week' } } },
-    },
-  });
+function progresso_mesSeguinte() {
+  const hoje = new Date();
+  if (progresso_anoExibido === hoje.getFullYear() && progresso_mesExibido === hoje.getMonth()) return;
+  progresso_mesExibido++;
+  if (progresso_mesExibido > 11) {
+    progresso_mesExibido = 0;
+    progresso_anoExibido++;
+  }
+  progresso_renderizarCalendario();
 }

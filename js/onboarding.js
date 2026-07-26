@@ -34,7 +34,9 @@ async function onboarding_criarConvite() {
   }
 
   const link = `${window.location.origin}${window.location.pathname}?convite=${token}`;
-  const mensagem = encodeURIComponent(`Oi ${nomeSugerido}! Entra no Bora (nosso app de treino) por esse link: ${link}`);
+  const mensagem = encodeURIComponent(
+    `Olá, ${nomeSugerido}! Você foi convidado(a) a participar do Bora — o app de treino da nossa família, pra trocar aquela ficha de papel por algo mais fácil e a gente se motivar junto. Clica no link e cria seu perfil: ${link}`
+  );
 
   document.getElementById('admin-convite-link-gerado').innerHTML = `
     <div class="admin-item-linha">
@@ -118,9 +120,12 @@ function onboarding_escolherAvatar() {
   });
 }
 
-function onboarding_alternarVisibilidadePin(inputId, botao) {
+function onboarding_alternarVisibilidadePin(inputId, botaoId) {
   const input = document.getElementById(inputId);
-  input.type = input.type === 'password' ? 'text' : 'password';
+  const botao = document.getElementById(botaoId);
+  const oculto = input.type === 'password';
+  input.type = oculto ? 'text' : 'password';
+  botao.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${oculto ? ICONS['eye'] : ICONS['eye-off']}</svg>`;
 }
 
 function onboarding_validarFormulario() {
@@ -166,5 +171,27 @@ async function onboarding_finalizar() {
 
   salvarSessao(perfil);
   window.history.replaceState({}, '', window.location.pathname);
-  irPara('home');
+
+  document.getElementById('boasvindas-titulo').textContent = `Bem-vindo(a), ${nome}!`;
+  onboarding_dispararConfete();
+  document.getElementById('modal-boasvindas').style.display = 'flex';
+
+  setTimeout(() => {
+    document.getElementById('modal-boasvindas').style.display = 'none';
+    irPara('home');
+  }, 2400);
+}
+
+function onboarding_dispararConfete() {
+  const container = document.getElementById('confete-container');
+  const cores = ['#FF5A3C', '#FFC93C', '#E63977', '#2FA84F', '#0E4F4A'];
+  container.innerHTML = '';
+  for (let i = 0; i < 30; i++) {
+    const el = document.createElement('div');
+    el.className = 'confete-item';
+    el.style.left = Math.random() * 100 + '%';
+    el.style.background = cores[i % cores.length];
+    el.style.animationDelay = (Math.random() * 0.4) + 's';
+    container.appendChild(el);
+  }
 }

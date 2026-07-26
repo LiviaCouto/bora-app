@@ -41,15 +41,16 @@
       <button class="pin-tecla" onclick="auth_digitarPin(7)">7</button>
       <button class="pin-tecla" onclick="auth_digitarPin(8)">8</button>
       <button class="pin-tecla" onclick="auth_digitarPin(9)">9</button>
-      <div></div>
+      <div class="pin-tecla pin-tecla-vazia"></div>
       <button class="pin-tecla" onclick="auth_digitarPin(0)">0</button>
-      <button class="pin-tecla" onclick="auth_apagarPin()">⌫</button>
+      <button class="pin-tecla" onclick="auth_apagarPin()"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Z"/><path d="M18 9l-6 6M12 9l6 6"/></svg></button>
     </div>
   </div>
 </div>
 
 <!-- ========== ONBOARDING (via convite) ========== -->
 <div id="secao-onboarding" class="app-section">
+  <div class="onboarding-aviso"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg> Finalize seu cadastro para ter acesso ao Bora</div>
   <div style="text-align:center;margin-bottom:4px">
     <img src="icons/logo-bora-simbolo.png" alt="Bora" style="width:90px">
   </div>
@@ -73,14 +74,14 @@
 
   <div class="input-wrap-pin">
     <input class="input-demo" id="onboarding-pin" type="password" placeholder="Crie um PIN de 4 dígitos" maxlength="4" inputmode="numeric" oninput="onboarding_validarFormulario()">
-    <button type="button" class="btn-olho" onclick="onboarding_alternarVisibilidadePin('onboarding-pin', this)">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+    <button type="button" class="btn-olho" id="olho-onboarding-pin" onclick="onboarding_alternarVisibilidadePin('onboarding-pin', 'olho-onboarding-pin')">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a19.4 19.4 0 0 1 4.22-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a19.5 19.5 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg>
     </button>
   </div>
   <div class="input-wrap-pin">
     <input class="input-demo" id="onboarding-pin-confirmar" type="password" placeholder="Confirme o PIN" maxlength="4" inputmode="numeric" oninput="onboarding_validarFormulario()">
-    <button type="button" class="btn-olho" onclick="onboarding_alternarVisibilidadePin('onboarding-pin-confirmar', this)">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+    <button type="button" class="btn-olho" id="olho-onboarding-pin-confirmar" onclick="onboarding_alternarVisibilidadePin('onboarding-pin-confirmar', 'olho-onboarding-pin-confirmar')">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a19.4 19.4 0 0 1 4.22-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a19.5 19.5 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg>
     </button>
   </div>
   <p id="onboarding-erro-pin" class="erro-msg" style="display:none">Os PINs não coincidem</p>
@@ -204,19 +205,36 @@
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5M9 13h6M9 17h6M9 9h2"/></svg>
     </button>
   </div>
+
   <div class="card" style="margin-top:16px">
-    <div class="muted" style="margin-bottom:10px">Assiduidade (últimas ~14 semanas)</div>
-    <div class="heatmap" id="progresso-heatmap"></div>
+    <div class="calendario-cabecalho">
+      <button class="calendario-seta" onclick="progresso_mesAnterior()"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <strong id="progresso-mes-titulo" style="font-family:var(--font-display)"></strong>
+      <button class="calendario-seta" id="progresso-seta-frente" onclick="progresso_mesSeguinte()"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+    </div>
+    <div class="calendario-semana">
+      <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
+    </div>
+    <div class="calendario-dias" id="progresso-calendario-dias"></div>
   </div>
-  <div class="card" style="margin-top:16px">
-    <div class="muted" style="margin-bottom:10px">Evolução de carga</div>
-    <canvas id="progresso-grafico-carga" height="200"></canvas>
-  </div>
-  <div class="flex-wrap-botoes" style="margin-top:16px">
-    <button class="btn btn-outline btn-sm" onclick="irPara('ranking')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0Z"/><path d="M5 6H3v2a4 4 0 0 0 4 4M19 6h2v2a4 4 0 0 1-4 4"/></svg> Ranking da família</button>
-    <button class="btn btn-outline btn-sm" onclick="irPara('badges')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M8.5 13.5 7 22l5-3 5 3-1.5-8.5"/></svg> Minhas conquistas</button>
-    <button class="btn btn-outline btn-sm" onclick="irPara('medidas')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v10H3z"/><path d="M7 7v3M11 7v5M15 7v3M19 7v5"/></svg> Medidas corporais</button>
-    <button class="btn btn-outline btn-sm" onclick="irPara('comparativo')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg> Comparar ciclos</button>
+
+  <div class="grade-menu-progresso" style="margin-top:16px">
+    <button class="card-menu-progresso" onclick="irPara('ranking')">
+      <span class="card-menu-progresso-icone" style="background:var(--chama-pale, #FFE7E0);color:var(--chama-dark)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0Z"/><path d="M5 6H3v2a4 4 0 0 0 4 4M19 6h2v2a4 4 0 0 1-4 4"/></svg></span>
+      <span>Ranking da família</span>
+    </button>
+    <button class="card-menu-progresso" onclick="irPara('badges')">
+      <span class="card-menu-progresso-icone" style="background:var(--sol-pale);color:var(--aviso)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M8.5 13.5 7 22l5-3 5 3-1.5-8.5"/></svg></span>
+      <span>Minhas conquistas</span>
+    </button>
+    <button class="card-menu-progresso" onclick="irPara('medidas')">
+      <span class="card-menu-progresso-icone" style="background:var(--info-bg, #E3F1F7);color:var(--info, #1D6E93)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v10H3z"/><path d="M7 7v3M11 7v5M15 7v3M19 7v5"/></svg></span>
+      <span>Medidas corporais</span>
+    </button>
+    <button class="card-menu-progresso" onclick="irPara('comparativo')">
+      <span class="card-menu-progresso-icone" style="background:var(--verde-check-bg);color:var(--verde-check)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg></span>
+      <span>Comparar ciclos</span>
+    </button>
   </div>
 </div>
 
@@ -433,6 +451,16 @@
   </div>
 </div>
 
+<!-- ========== MODAL: BOAS-VINDAS APÓS CADASTRO ========== -->
+<div class="modal-overlay" id="modal-boasvindas">
+  <div class="modal-conteudo" style="text-align:center;position:relative;overflow:hidden">
+    <div class="confete-container" id="confete-container"></div>
+    <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="var(--chama)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:relative"><path d="M12 2C9 6 7 9 7 13a5 5 0 0 0 10 0c0-2-1-3.5-2-5 .2 2-1 3-2 2-.5-2 .5-5-1-8Z"/></svg>
+    <div style="font-family:var(--font-display);font-weight:700;font-size:22px;margin-top:10px;position:relative" id="boasvindas-titulo">Bem-vindo(a) à família!</div>
+    <p class="muted" style="position:relative">Bora treinar juntos.</p>
+  </div>
+</div>
+
 <!-- ========== TAB BAR ========== -->
 <nav class="tabbar">
   <div class="tabbar-logo"><img src="icons/logo-bora-simbolo.png" alt="Bora"></div>
@@ -445,8 +473,6 @@
 
 <!-- ========== SCRIPTS ========== -->
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-date-fns/3.0.0/chartjs-adapter-date-fns.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script src="js/config.js"></script>
@@ -480,12 +506,9 @@
     const veioDeConvite = await onboarding_verificarConviteNaURL();
 
     if (!veioDeConvite) {
-      const perfil = carregarSessao();
-      if (perfil) {
-        irPara('home');
-      } else {
-        irPara('auth');
-      }
+      // Sempre abre na seleção de perfil (estilo Netflix) — nunca pula
+      // direto pra Home, mesmo que exista uma sessão salva no aparelho.
+      irPara('auth');
     }
 
     if ('serviceWorker' in navigator) {

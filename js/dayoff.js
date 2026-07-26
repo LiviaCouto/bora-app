@@ -22,6 +22,9 @@ async function dayoff_marcarHoje() {
 }
 
 async function dayoff_removerHoje() {
+  const confirmado = confirm('Remover o day off de hoje?');
+  if (!confirmado) return;
+
   const perfil = AppState.perfilAtual;
   const supabase = getSupabase();
   const { error } = await supabase

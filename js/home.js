@@ -17,12 +17,11 @@ async function render_home() {
   const supabase = getSupabase();
   const hoje = todayLocal();
 
-  const { data: checkinHoje } = await supabase
+  const { data: checkinsHoje } = await supabase
     .from('checkins')
     .select('*')
     .eq('perfil_id', perfil.id)
-    .eq('data', hoje)
-    .maybeSingle();
+    .eq('data', hoje);
 
   const { data: dayOffHoje } = await supabase
     .from('dias_pausa')
@@ -34,17 +33,7 @@ async function render_home() {
   const areaCard = document.getElementById('home-card-treino');
   const areaCheckin = document.getElementById('home-area-checkin');
 
-  if (checkinHoje) {
-    areaCard.innerHTML = `
-      <div class="card-treino-home feito">
-        ${icon('check-circle', 28)}
-        <div>
-          <div class="label-sol">Check-in de hoje</div>
-          <div class="titulo-home">Já feito!</div>
-        </div>
-      </div>`;
-    areaCheckin.innerHTML = '';
-  } else if (dayOffHoje) {
+  if (dayOffHoje) {
     areaCard.innerHTML = `
       <div class="card-treino-home dayoff">
         ${icon('coffee', 28)}
@@ -56,10 +45,24 @@ async function render_home() {
     areaCheckin.innerHTML = `
       <button class="btn btn-outline btn-full" onclick="dayoff_removerHoje()">Marquei sem querer, remover</button>
     `;
+  } else if (checkinsHoje && checkinsHoje.length > 0) {
+    areaCard.innerHTML = `
+      <div class="card-treino-home feito">
+        ${icon('check-circle', 28)}
+        <div>
+          <div class="label-sol">Hoje</div>
+          <div class="titulo-home">${checkinsHoje.length} check-in${checkinsHoje.length > 1 ? 's' : ''} feito${checkinsHoje.length > 1 ? 's' : ''}!</div>
+        </div>
+      </div>`;
+    areaCheckin.innerHTML = `
+      <button class="btn btn-primary btn-full" onclick="checkin_iniciar()">Fazer outro check-in</button>
+    `;
   } else {
+    const hojeObj = new Date();
+    const dataFormatada = `${hojeObj.getDate()} de ${NOMES_MES[hojeObj.getMonth()].toLowerCase()}`;
     areaCard.innerHTML = `
       <div class="card-treino-home">
-        <div class="label-sol">Hoje</div>
+        <div class="label-sol">${dataFormatada}</div>
         <div class="titulo-home">${frase_do_dia()}</div>
       </div>`;
     areaCheckin.innerHTML = `
@@ -127,9 +130,10 @@ async function home_listarCheckinsRecentes(perfilId) {
 
   const { data: checkins } = await supabase
     .from('checkins')
-    .select('*, tipos_atividade(nome, icone)')
+    .select('*, tipos_atividade(nome, icone), ciclos(nome_ciclo)')
     .eq('perfil_id', perfilId)
     .order('data', { ascending: false })
+    .order('criado_em', { ascending: false })
     .limit(8);
 
   const { data: pausas } = await supabase
@@ -140,12 +144,21 @@ async function home_listarCheckinsRecentes(perfilId) {
     .limit(8);
 
   const itens = [
-    ...(checkins || []).map(c => ({
-      tipo: 'checkin',
-      data: c.data,
-      nome: c.tipos_atividade ? c.tipos_atividade.nome : 'Treino',
-      icone: c.tipos_atividade ? c.tipos_atividade.icone : 'dumbbell',
-    })),
+    ...(checkins || []).map(c => {
+      let nomeExibicao;
+      if (c.letra_treino) {
+        const nomeCiclo = c.ciclos ? c.ciclos.nome_ciclo : null;
+        nomeExibicao = nomeCiclo ? `${nomeCiclo} — Treino ${c.letra_treino}` : `Treino ${c.letra_treino}`;
+      } else {
+        nomeExibicao = c.tipos_atividade ? c.tipos_atividade.nome : 'Treino';
+      }
+      return {
+        tipo: 'checkin',
+        data: c.data,
+        nome: nomeExibicao,
+        icone: c.letra_treino ? 'dumbbell' : (c.tipos_atividade ? c.tipos_atividade.icone : 'dumbbell'),
+      };
+    }),
     ...(pausas || []).map(p => ({
       tipo: 'dayoff',
       data: p.data,

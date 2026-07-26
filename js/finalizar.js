@@ -43,9 +43,11 @@ async function finalizar_salvarTreino() {
 }
 
 function finalizar_mostrarCelebracao() {
+  document.getElementById('modal-celebracao-titulo').textContent = celebracao_frase();
+  celebracao_gerarConfete('confete-container-treino');
   document.getElementById('modal-celebracao').style.display = 'flex';
   setTimeout(() => {
     document.getElementById('modal-celebracao').style.display = 'none';
     irPara('progresso');
-  }, 1800);
+  }, 2000);
 }

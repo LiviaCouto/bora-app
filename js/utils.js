@@ -72,6 +72,8 @@ const ICONS = {
   sparkles: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.5 5.5l2.5 2.5M16 16l2.5 2.5M18.5 5.5 16 8M8 16l-2.5 2.5"/>',
   repeat: '<path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>',
   'circulo-vazio': '<circle cx="12" cy="12" r="9"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/>',
   video: '<rect x="3" y="5" width="14" height="14" rx="2"/><path d="M17 9.5 21 6.5v11L17 14.5"/>',
   eye: '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/>',
   'eye-off': '<path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a19.4 19.4 0 0 1 4.22-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a19.5 19.5 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/>',
@@ -90,4 +92,13 @@ function mostrarToast(titulo, descricao) {
   el.innerHTML = `<div><div class="toast-title">${titulo}</div><div class="toast-desc">${descricao}</div></div>`;
   container.appendChild(el);
   setTimeout(() => el.remove(), 5000);
+}
+
+// Modal rápido de confirmação de salvamento (unificado pro app inteiro)
+function mostrarModalSalvamento(mensagem) {
+  const modal = document.getElementById('modal-salvamento');
+  if (!modal) return;
+  document.getElementById('modal-salvamento-texto').textContent = mensagem || 'Salvo com sucesso!';
+  modal.style.display = 'flex';
+  setTimeout(() => { modal.style.display = 'none'; }, 1400);
 }

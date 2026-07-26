@@ -25,6 +25,7 @@ function admin_abrirAba(aba) {
   if (aba === 'convites') onboarding_listarConvites();
   if (aba === 'feedbacks') admin_listarFeedbacks();
   if (aba === 'fotos') admin_listarFotosTreino();
+  if (aba === 'leads') admin_listarLeads();
 }
 
 // ---------- PERFIS ----------
@@ -102,7 +103,11 @@ async function admin_carregarCiclosDoPerfil() {
   const container = document.getElementById('admin-lista-ciclos');
   container.innerHTML = (data || []).map(c => `
     <div class="admin-item-linha">
-      <div>Ciclo desde ${formatarDataBR(c.data_inicio)} <span class="badge ${c.status === 'ativo' ? 'badge-success' : 'badge-neutral'}">${c.status}</span></div>
+      <div>
+        <strong>${c.nome_ciclo || ('Ciclo desde ' + formatarDataBR(c.data_inicio))}</strong>
+        <span class="badge ${c.status === 'ativo' ? 'badge-success' : 'badge-neutral'}">${c.status}</span>
+        <div class="muted" style="font-size:11px">${c.nome_academia || ''}${c.data_fim_prevista ? ' · até ' + formatarDataBR(c.data_fim_prevista) : ''}</div>
+      </div>
       <div style="display:flex;gap:6px">
         <button class="btn btn-outline btn-sm" onclick="admin_gerenciarExercicios('${c.id}')">Editar exercícios</button>
         <button class="btn btn-danger btn-sm" onclick="admin_apagarCiclo('${c.id}')">Excluir</button>
@@ -126,30 +131,68 @@ async function admin_apagarCiclo(cicloId) {
 
 async function admin_criarCiclo() {
   const perfilId = document.getElementById('admin-select-perfil-ciclo').value;
+  const nomeCiclo = document.getElementById('admin-ciclo-nome').value.trim();
+  const academia = document.getElementById('admin-ciclo-academia').value.trim();
   const responsavel = document.getElementById('admin-ciclo-responsavel').value.trim();
-  const cref = document.getElementById('admin-ciclo-cref').value.trim();
+  const dataFim = document.getElementById('admin-ciclo-fim').value;
 
   const supabase = getSupabase();
   const { error } = await supabase.from('ciclos').insert({
     perfil_id: perfilId,
     data_inicio: todayLocal(),
+    data_fim_prevista: dataFim || null,
+    nome_ciclo: nomeCiclo || null,
+    nome_academia: academia || null,
     responsavel_nome: responsavel || null,
-    responsavel_cref: cref || null,
   });
 
   if (error) {
     alert('Não foi possível criar o ciclo.');
     return;
   }
+
+  document.getElementById('admin-ciclo-nome').value = '';
+  document.getElementById('admin-ciclo-academia').value = '';
+  document.getElementById('admin-ciclo-responsavel').value = '';
+  document.getElementById('admin-ciclo-fim').value = '';
   admin_carregarCiclosDoPerfil();
 }
 
 let admin_cicloEmEdicao = null;
+let admin_bibliotecaIdSelecionado = null;
 
 async function admin_gerenciarExercicios(cicloId) {
   admin_cicloEmEdicao = cicloId;
   document.getElementById('admin-painel-exercicios').style.display = 'block';
+  await admin_atualizarSelectDeTreinos();
   await admin_listarExercicios();
+}
+
+async function admin_atualizarSelectDeTreinos() {
+  const supabase = getSupabase();
+  const { data } = await supabase
+    .from('exercicios')
+    .select('letra_treino')
+    .eq('ciclo_id', admin_cicloEmEdicao);
+
+  const letras = [...new Set((data || []).map(e => e.letra_treino))].sort();
+  const select = document.getElementById('admin-ex-letra-select');
+  select.innerHTML = letras.map(l => `<option value="${l}">Treino ${l}</option>`).join('') +
+    `<option value="__novo__">+ Criar novo treino</option>`;
+  admin_alternarNovoTreino();
+}
+
+function admin_alternarNovoTreino() {
+  const select = document.getElementById('admin-ex-letra-select');
+  const campoNovo = document.getElementById('admin-ex-letra-novo');
+  campoNovo.style.display = select.value === '__novo__' ? 'block' : 'none';
+}
+
+function admin_escolherDaBiblioteca() {
+  biblioteca_abrirSeletor((id, nome) => {
+    admin_bibliotecaIdSelecionado = id;
+    document.getElementById('admin-ex-nome').value = nome;
+  });
 }
 
 async function admin_listarExercicios() {
@@ -171,7 +214,10 @@ async function admin_listarExercicios() {
 }
 
 async function admin_adicionarExercicio() {
-  const letra = document.getElementById('admin-ex-letra').value.trim().toUpperCase();
+  const selectLetra = document.getElementById('admin-ex-letra-select').value;
+  const letra = (selectLetra === '__novo__'
+    ? document.getElementById('admin-ex-letra-novo').value.trim()
+    : selectLetra).toUpperCase();
   const nome = document.getElementById('admin-ex-nome').value.trim();
   const numeroMaquina = document.getElementById('admin-ex-maquina').value.trim();
   const seriesMin = parseInt(document.getElementById('admin-ex-series-min').value) || 2;
@@ -181,7 +227,7 @@ async function admin_adicionarExercicio() {
   const intervalo = parseInt(document.getElementById('admin-ex-intervalo').value) || 60;
 
   if (!letra || !nome) {
-    alert('Preencha ao menos a letra do treino e o nome do exercício.');
+    alert('Preencha ao menos o treino e o nome do exercício.');
     return;
   }
 
@@ -189,6 +235,7 @@ async function admin_adicionarExercicio() {
   const { error } = await supabase.from('exercicios').insert({
     ciclo_id: admin_cicloEmEdicao,
     letra_treino: letra,
+    biblioteca_exercicio_id: admin_bibliotecaIdSelecionado,
     nome,
     numero_maquina: numeroMaquina || null,
     series_min: seriesMin,
@@ -205,10 +252,14 @@ async function admin_adicionarExercicio() {
 
   document.getElementById('admin-ex-nome').value = '';
   document.getElementById('admin-ex-maquina').value = '';
+  admin_bibliotecaIdSelecionado = null;
+  admin_atualizarSelectDeTreinos();
   admin_listarExercicios();
 }
 
 async function admin_apagarExercicio(id) {
+  const confirmado = confirm('Excluir esse exercício do treino? Não tem como desfazer.');
+  if (!confirmado) return;
   const supabase = getSupabase();
   await supabase.from('exercicios').delete().eq('id', id);
   admin_listarExercicios();
@@ -276,6 +327,14 @@ function admin_ativarAvisoTempoReal() {
       const { data: perfilDaFoto } = await supabase.from('perfis').select('nome').eq('id', payload.new.perfil_id).maybeSingle();
       mostrarToast('Nova foto de treino!', `${perfilDaFoto ? perfilDaFoto.nome : 'Alguém'} enviou uma foto pra você cadastrar.`);
       admin_atualizarBadgeFotos();
+    })
+    .subscribe();
+
+  supabase
+    .channel('novos-leads')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'leads' }, (payload) => {
+      mostrarToast('Novo lead!', `${payload.new.nome} pediu acesso ao Bora.`);
+      admin_atualizarBadgeLeads();
     })
     .subscribe();
 

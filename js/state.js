@@ -57,12 +57,19 @@ function irPara(secaoId) {
   const alvo = document.getElementById('secao-' + secaoId);
   if (alvo) alvo.style.display = 'block';
 
+  // Guarda a tela atual só se a pessoa já estiver logada — assim um F5/refresh
+  // continua na mesma tela, mas abrir o app do zero (aba nova) sempre volta
+  // pra seleção de perfil.
+  if (AppState.perfilAtual && secaoId !== 'auth' && secaoId !== 'onboarding' && secaoId !== 'conviteinvalido') {
+    sessionStorage.setItem('bora_ultima_secao', secaoId);
+  }
+
   const tabbar = document.querySelector('.tabbar');
   if (tabbar) {
-    const escondeTabbar = (secaoId === 'auth' || secaoId === 'onboarding');
+    const escondeTabbar = (secaoId === 'auth' || secaoId === 'onboarding' || secaoId === 'conviteinvalido');
     tabbar.style.display = escondeTabbar ? 'none' : 'flex';
   }
-  document.body.style.paddingBottom = (secaoId === 'auth' || secaoId === 'onboarding') ? '20px' : '';
+  document.body.style.paddingBottom = (secaoId === 'auth' || secaoId === 'onboarding' || secaoId === 'conviteinvalido') ? '20px' : '';
 
   document.querySelectorAll('.tabbar-item').forEach(el => {
     el.classList.toggle('active', el.dataset.secao === secaoId);

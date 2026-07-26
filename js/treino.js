@@ -11,26 +11,56 @@ async function render_treino() {
   const perfil = AppState.perfilAtual;
   const supabase = getSupabase();
 
-  const { data: ciclo } = await supabase
+  const { data: ciclos } = await supabase
     .from('ciclos')
     .select('*')
     .eq('perfil_id', perfil.id)
     .eq('status', 'ativo')
-    .order('data_inicio', { ascending: false })
-    .maybeSingle();
+    .order('data_inicio', { ascending: false });
 
   const area = document.getElementById('treino-area-escolha');
 
-  if (!ciclo) {
+  if (!ciclos || ciclos.length === 0) {
     area.innerHTML = `
       <div class="empty-state">
         <div class="empty-title">Ainda não tem treino aqui</div>
-        <div class="empty-desc">Peça ao admin da família pra cadastrar seu ciclo atual</div>
+        <div class="empty-desc">Toque no ícone de lápis acima pra cadastrar seu ciclo</div>
       </div>`;
     return;
   }
 
+  if (ciclos.length === 1) {
+    await treino_selecionarCiclo(ciclos[0]);
+    return;
+  }
+
+  // Mais de um ciclo ativo — deixa escolher qual treinar agora
+  area.innerHTML = `
+    <p class="muted" style="margin-bottom:16px">Você tem mais de um ciclo ativo. Qual vamos treinar?</p>
+    <div class="grade-treinos">
+      ${ciclos.map((c, i) => `
+        <button class="card-treino-opcao" onclick='treino_selecionarCicloPorIndice(${i})'>
+          <div class="card-treino-opcao-letra">${icon('dumbbell', 20)}</div>
+          <div class="card-treino-opcao-texto">
+            <strong>${c.nome_ciclo || 'Ciclo desde ' + formatarDataBR(c.data_inicio)}</strong>
+            <span class="muted">${c.nome_academia || 'Toque para escolher'}</span>
+          </div>
+        </button>
+      `).join('')}
+    </div>
+  `;
+  treino_ciclosAtivos = ciclos;
+}
+
+let treino_ciclosAtivos = [];
+
+function treino_selecionarCicloPorIndice(i) {
+  treino_selecionarCiclo(treino_ciclosAtivos[i]);
+}
+
+async function treino_selecionarCiclo(ciclo) {
   treino_cicloAtivo = ciclo;
+  const supabase = getSupabase();
 
   const { data: exercicios } = await supabase
     .from('exercicios')
@@ -43,17 +73,19 @@ async function render_treino() {
     contagemPorLetra[e.letra_treino] = (contagemPorLetra[e.letra_treino] || 0) + 1;
   });
 
+  const area = document.getElementById('treino-area-escolha');
+
   if (letras.length === 0) {
     area.innerHTML = `
       <div class="empty-state">
         <div class="empty-title">Ciclo criado, mas sem exercícios ainda</div>
-        <div class="empty-desc">Peça ao admin pra colar ou cadastrar os exercícios</div>
+        <div class="empty-desc">Toque no ícone de lápis acima pra cadastrar</div>
       </div>`;
     return;
   }
 
   area.innerHTML = `
-    <p class="muted" style="margin-bottom:16px">Qual treino você vai fazer hoje?</p>
+    <p class="muted" style="margin-bottom:16px">${treino_ciclosAtivos.length > 1 ? (treino_cicloAtivo.nome_ciclo || 'Ciclo') + ' — qual treino?' : 'Qual treino você vai fazer hoje?'}</p>
     <div class="grade-treinos">
       ${letras.map(l => `
         <button class="card-treino-opcao" onclick="treino_abrirLista('${l}')">

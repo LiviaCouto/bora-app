@@ -49,7 +49,8 @@ async function progresso_renderizarCalendario() {
     const marcado = diasComCheckin.has(dataStr);
     const futuro = ehMesAtual && d > hoje.getDate();
     const ehHoje = ehMesAtual && d === hoje.getDate();
-    html += `<div class="calendario-dia ${marcado ? 'marcado' : ''} ${futuro ? 'futuro' : ''} ${ehHoje ? 'hoje' : ''}">${d}</div>`;
+    const onclick = marcado ? `onclick="celebracao_disparar()"` : '';
+    html += `<div class="calendario-dia ${marcado ? 'marcado' : ''} ${futuro ? 'futuro' : ''} ${ehHoje ? 'hoje' : ''}" ${onclick} style="${marcado ? 'cursor:pointer' : ''}">${d}</div>`;
   }
   document.getElementById('progresso-calendario-dias').innerHTML = html;
 

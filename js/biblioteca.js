@@ -10,6 +10,8 @@ const GRUPOS_MUSCULARES = [
   { chave: 'triceps', label: 'Tríceps' },
   { chave: 'perna', label: 'Perna' },
   { chave: 'abdomen', label: 'Abdômen' },
+  { chave: 'cardio', label: 'Cardio' },
+  { chave: 'funcional', label: 'Funcional' },
 ];
 
 let biblioteca_callbackSelecao = null;

@@ -144,14 +144,20 @@ body {
 .heatmap-dia.ativo { background: var(--chama); }
 
 /* Admin */
-.admin-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
-.admin-aba-botao { background: #fff; border: 1px solid var(--border-light); border-radius: 9999px; padding: 8px 16px; font-size: 12px; cursor: pointer; position: relative; }
+.admin-tabs { display: flex; gap: 6px; margin-bottom: 20px; background: var(--areia-deep); padding: 6px; border-radius: 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.admin-tabs::-webkit-scrollbar { display: none; }
+.admin-aba-botao {
+  background: transparent; border: none; border-radius: 12px; padding: 9px 14px; font-size: 12.5px; font-weight: 600;
+  cursor: pointer; position: relative; display: inline-flex; align-items: center; gap: 6px; color: var(--text-secondary);
+  transition: background .15s, color .15s; white-space: nowrap; flex-shrink: 0;
+}
+.admin-aba-botao:hover { background: rgba(255,255,255,.6); }
+.admin-aba-botao.active { background: var(--mare); color: #fff; box-shadow: 0 2px 8px rgba(14,79,74,.25); }
 .selo-contagem {
   position: absolute; top: -6px; right: -6px; background: var(--erro); color: #fff;
   font-size: 10px; font-weight: 700; min-width: 16px; height: 16px; border-radius: 8px;
   display: flex; align-items: center; justify-content: center; padding: 0 4px;
 }
-.admin-aba-botao.active { background: var(--mare); color: #fff; border-color: var(--mare); }
 .admin-item-linha { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-light); font-size: 13px; }
 .input-demo { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-light); border-radius: var(--r-btn); font-family: var(--font-sans); font-size: 14px; margin-bottom: 10px; }
 .badge { display: inline-flex; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 9999px; }
@@ -212,6 +218,29 @@ body {
   padding: 18px 10px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: var(--text-primary);
 }
 .card-menu-progresso-icone { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+/* Rodapé de créditos */
+.rodape-creditos { text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border-light); }
+
+/* Cronômetro do check-in livre */
+.cronometro-box { text-align: center; background: var(--areia-deep); border-radius: var(--r-card); padding: 16px; margin-bottom: 14px; }
+.cronometro-numero { font-family: var(--font-mono); font-size: 32px; font-weight: 600; color: var(--chama); margin-bottom: 8px; }
+
+/* Barra de progresso da execução guiada */
+.execucao-barra-progresso { height: 6px; background: var(--areia-deep); border-radius: 3px; margin-bottom: 14px; overflow: hidden; }
+.execucao-barra-progresso-preenchida { height: 100%; background: var(--chama); border-radius: 3px; transition: width .3s; }
+
+/* Checkbox de objetivo (Meu Perfil) */
+.check-wrap { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #fff; border: 1px solid var(--border-light); border-radius: var(--r-btn); margin-bottom: 8px; font-size: 13px; cursor: pointer; }
+.check-wrap input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--chama); flex-shrink: 0; }
+
+/* Desafios — tela "em breve" */
+.desafios-em-breve { text-align: center; padding: 60px 20px; }
+.desafios-haltere { animation: balancar 1.4s ease-in-out infinite; }
+@keyframes balancar {
+  0%, 100% { transform: rotate(-8deg); }
+  50% { transform: rotate(8deg); }
+}
 
 .select-papel { font-size: 12px; padding: 6px 8px; border-radius: var(--r-btn); border: 1.5px solid var(--border-light); background: #fff; font-family: var(--font-sans); }
 

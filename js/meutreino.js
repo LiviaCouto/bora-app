@@ -1,7 +1,7 @@
 // ============================================================
 // BORA — Meu Treino (qualquer perfil gerencia o PRÓPRIO ciclo)
-// Diferente do Admin → Treinos: aqui só dá pra editar manualmente,
-// o upload por texto colado (MD) continua exclusivo do admin.
+// Diferente do Admin → Treinos: aqui só dá pra editar manualmente
+// ou pela biblioteca — o upload por texto colado (MD) é exclusivo do admin.
 // ============================================================
 
 let meutreino_cicloEmEdicao = null;
@@ -26,7 +26,11 @@ async function render_meutreino() {
 
   document.getElementById('meutreino-lista-ciclos').innerHTML = (data || []).map(c => `
     <div class="admin-item-linha">
-      <div>Ciclo desde ${formatarDataBR(c.data_inicio)} <span class="badge ${c.status === 'ativo' ? 'badge-success' : 'badge-neutral'}">${c.status}</span></div>
+      <div>
+        <strong>${c.nome_ciclo || ('Ciclo desde ' + formatarDataBR(c.data_inicio))}</strong>
+        <span class="badge ${c.status === 'ativo' ? 'badge-success' : 'badge-neutral'}">${c.status}</span>
+        <div class="muted" style="font-size:11px">${c.nome_academia || ''}${c.data_fim_prevista ? ' · até ' + formatarDataBR(c.data_fim_prevista) : ''}</div>
+      </div>
       <div style="display:flex;gap:6px">
         <button class="btn btn-outline btn-sm" onclick="meutreino_editarExercicios('${c.id}')">Editar exercícios</button>
         <button class="btn btn-danger btn-sm" onclick="meutreino_apagarCiclo('${c.id}')">Excluir</button>
@@ -39,15 +43,19 @@ async function render_meutreino() {
 
 async function meutreino_criarCiclo() {
   const perfil = AppState.perfilAtual;
+  const nomeCiclo = document.getElementById('meutreino-ciclo-nome').value.trim();
+  const academia = document.getElementById('meutreino-ciclo-academia').value.trim();
   const responsavel = document.getElementById('meutreino-ciclo-responsavel').value.trim();
-  const cref = document.getElementById('meutreino-ciclo-cref').value.trim();
+  const dataFim = document.getElementById('meutreino-ciclo-fim').value;
 
   const supabase = getSupabase();
   const { error } = await supabase.from('ciclos').insert({
     perfil_id: perfil.id,
     data_inicio: todayLocal(),
+    data_fim_prevista: dataFim || null,
+    nome_ciclo: nomeCiclo || null,
+    nome_academia: academia || null,
     responsavel_nome: responsavel || null,
-    responsavel_cref: cref || null,
   });
 
   if (error) {
@@ -55,8 +63,10 @@ async function meutreino_criarCiclo() {
     return;
   }
 
+  document.getElementById('meutreino-ciclo-nome').value = '';
+  document.getElementById('meutreino-ciclo-academia').value = '';
   document.getElementById('meutreino-ciclo-responsavel').value = '';
-  document.getElementById('meutreino-ciclo-cref').value = '';
+  document.getElementById('meutreino-ciclo-fim').value = '';
   render_meutreino();
 }
 
@@ -76,7 +86,28 @@ async function meutreino_apagarCiclo(cicloId) {
 async function meutreino_editarExercicios(cicloId) {
   meutreino_cicloEmEdicao = cicloId;
   document.getElementById('meutreino-painel-exercicios').style.display = 'block';
+  await meutreino_atualizarSelectDeTreinos();
   await meutreino_listarExercicios();
+}
+
+async function meutreino_atualizarSelectDeTreinos() {
+  const supabase = getSupabase();
+  const { data } = await supabase
+    .from('exercicios')
+    .select('letra_treino')
+    .eq('ciclo_id', meutreino_cicloEmEdicao);
+
+  const letras = [...new Set((data || []).map(e => e.letra_treino))].sort();
+  const select = document.getElementById('meutreino-ex-letra-select');
+  select.innerHTML = letras.map(l => `<option value="${l}">Treino ${l}</option>`).join('') +
+    `<option value="__novo__">+ Criar novo treino</option>`;
+  meutreino_alternarNovoTreino();
+}
+
+function meutreino_alternarNovoTreino() {
+  const select = document.getElementById('meutreino-ex-letra-select');
+  const campoNovo = document.getElementById('meutreino-ex-letra-novo');
+  campoNovo.style.display = select.value === '__novo__' ? 'block' : 'none';
 }
 
 async function meutreino_listarExercicios() {
@@ -97,7 +128,10 @@ async function meutreino_listarExercicios() {
 }
 
 async function meutreino_adicionarExercicio() {
-  const letra = document.getElementById('meutreino-ex-letra').value.trim().toUpperCase();
+  const selectLetra = document.getElementById('meutreino-ex-letra-select').value;
+  const letra = (selectLetra === '__novo__'
+    ? document.getElementById('meutreino-ex-letra-novo').value.trim()
+    : selectLetra).toUpperCase();
   const nome = document.getElementById('meutreino-ex-nome').value.trim();
   const numeroMaquina = document.getElementById('meutreino-ex-maquina').value.trim();
   const seriesMin = parseInt(document.getElementById('meutreino-ex-series-min').value) || 2;
@@ -107,7 +141,7 @@ async function meutreino_adicionarExercicio() {
   const intervalo = parseInt(document.getElementById('meutreino-ex-intervalo').value) || 60;
 
   if (!letra || !nome) {
-    alert('Preencha ao menos a letra do treino e o nome do exercício.');
+    alert('Preencha ao menos o treino e o nome do exercício.');
     return;
   }
 
@@ -133,10 +167,13 @@ async function meutreino_adicionarExercicio() {
   document.getElementById('meutreino-ex-nome').value = '';
   document.getElementById('meutreino-ex-maquina').value = '';
   meutreino_bibliotecaIdSelecionado = null;
+  meutreino_atualizarSelectDeTreinos();
   meutreino_listarExercicios();
 }
 
 async function meutreino_apagarExercicio(id) {
+  const confirmado = confirm('Excluir esse exercício do treino? Não tem como desfazer.');
+  if (!confirmado) return;
   const supabase = getSupabase();
   await supabase.from('exercicios').delete().eq('id', id);
   meutreino_listarExercicios();

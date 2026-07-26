@@ -29,6 +29,9 @@ function execucao_renderizarExercicioAtual() {
   const ex = treino_listaExercicios[execucao_indiceAtual];
   const total = treino_listaExercicios.length;
 
+  const progresso = Math.round((treino_concluidos.size / total) * 100);
+  document.getElementById('execucao-barra-preenchida').style.width = `${progresso}%`;
+
   document.getElementById('execucao-progresso').textContent =
     `Treino ${AppState.treinoEscolhidoHoje} · Exercício ${execucao_indiceAtual + 1} de ${total}`;
   document.getElementById('execucao-nome-exercicio').textContent = ex.nome;

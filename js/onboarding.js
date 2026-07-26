@@ -34,19 +34,20 @@ async function onboarding_criarConvite() {
   }
 
   const link = `${window.location.origin}${window.location.pathname}?convite=${token}`;
-  const mensagem = encodeURIComponent(
-    `Olá, ${nomeSugerido}! Você foi convidado(a) a participar do Bora — o app de treino da nossa família, pra trocar aquela ficha de papel por algo mais fácil e a gente se motivar junto. Clica no link e cria seu perfil: ${link}`
-  );
+  const nomeAdmin = AppState.perfilAtual ? AppState.perfilAtual.nome : 'a família';
+  const mensagem = `${nomeAdmin} te chamou pro Bora! Um app da nossa família pra treinar juntos, sem papel e com mais motivação. Toca aqui e cria seu perfil: ${link}`;
+  const mensagemCodificada = encodeURIComponent(mensagem);
 
   document.getElementById('admin-convite-link-gerado').innerHTML = `
     <div class="admin-item-linha">
       <input class="input-demo" style="margin:0" readonly value="${link}" onclick="this.select()">
     </div>
     <div class="flex-wrap-botoes" style="margin-top:8px">
-      <button class="btn btn-outline btn-sm" onclick="navigator.clipboard.writeText('${link}')">${icon('copy', 14)} Copiar link</button>
-      <a class="btn btn-primary btn-sm" href="https://wa.me/?text=${mensagem}" target="_blank">${icon('message-square', 14)} Enviar por WhatsApp</a>
-      <a class="btn btn-outline btn-sm" href="mailto:${email}?subject=Convite para o Bora&body=${mensagem}">${icon('mail', 14)} Abrir e-mail</a>
+      <button class="btn btn-primary btn-sm" onclick="navigator.clipboard.writeText(${JSON.stringify(mensagem)});this.textContent='Copiado!'">${icon('copy', 14)} Copiar mensagem pronta</button>
+      <a class="btn btn-outline btn-sm" href="https://wa.me/?text=${mensagemCodificada}" target="_blank">${icon('message-square', 14)} Abrir WhatsApp</a>
+      <a class="btn btn-outline btn-sm" href="mailto:${email}?subject=Convite para o Bora&body=${mensagemCodificada}">${icon('mail', 14)} Abrir e-mail</a>
     </div>
+    <p class="muted" style="font-size:11px;margin-top:8px">Dica: cole a mensagem no WhatsApp e anexe a logo do Bora como foto, se quiser deixar mais bonito.</p>
   `;
 
   document.getElementById('admin-convite-nome').value = '';
@@ -64,9 +65,60 @@ async function onboarding_listarConvites() {
   container.innerHTML = (data || []).map(c => `
     <div class="admin-item-linha">
       <div>${c.nome_sugerido || c.email || 'Convite sem nome'}<div class="muted">${c.criado_em ? formatarDataBR(c.criado_em.split('T')[0]) : ''}</div></div>
-      <span class="badge ${c.usado ? 'badge-success' : 'badge-neutral'}">${c.usado ? 'Aceito' : 'Pendente'}</span>
+      <div style="display:flex;gap:6px;align-items:center">
+        <span class="badge ${c.usado ? 'badge-success' : 'badge-neutral'}">${c.usado ? 'Aceito' : 'Pendente'}</span>
+        ${!c.usado ? `
+          <button class="btn btn-outline btn-sm" onclick='onboarding_verConvite(${JSON.stringify(c)})'>Ver</button>
+          <button class="btn btn-outline btn-sm" onclick="onboarding_editarConvite('${c.id}', ${JSON.stringify(c.nome_sugerido || '')}, ${JSON.stringify(c.email || '')})">Editar</button>
+        ` : ''}
+        <button class="btn btn-danger btn-sm" onclick="onboarding_excluirConvite('${c.id}')">Excluir</button>
+      </div>
     </div>
   `).join('') || '<p class="muted">Nenhum convite gerado ainda.</p>';
+}
+
+function onboarding_verConvite(convite) {
+  const link = `${window.location.origin}${window.location.pathname}?convite=${convite.token}`;
+  const nomeAdmin = AppState.perfilAtual ? AppState.perfilAtual.nome : 'a família';
+  const mensagem = `${nomeAdmin} te chamou pro Bora! Um app da nossa família pra treinar juntos, sem papel e com mais motivação. Toca aqui e cria seu perfil: ${link}`;
+
+  document.getElementById('admin-convite-link-gerado').innerHTML = `
+    <div class="admin-item-linha">
+      <input class="input-demo" style="margin:0" readonly value="${link}" onclick="this.select()">
+    </div>
+    <div class="flex-wrap-botoes" style="margin-top:8px">
+      <button class="btn btn-primary btn-sm" onclick="navigator.clipboard.writeText(${JSON.stringify(mensagem)});this.textContent='Copiado!'">${icon('copy', 14)} Copiar mensagem pronta</button>
+      <a class="btn btn-outline btn-sm" href="https://wa.me/?text=${encodeURIComponent(mensagem)}" target="_blank">${icon('message-square', 14)} Abrir WhatsApp</a>
+    </div>
+  `;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function onboarding_editarConvite(id, nomeAtual, emailAtual) {
+  const novoNome = prompt('Nome sugerido:', nomeAtual);
+  if (novoNome === null) return;
+  const novoEmail = prompt('E-mail (opcional):', emailAtual);
+
+  const supabase = getSupabase();
+  const { error } = await supabase.from('convites').update({
+    nome_sugerido: novoNome.trim(),
+    email: novoEmail ? novoEmail.trim() : null,
+  }).eq('id', id);
+
+  if (error) {
+    alert('Não foi possível editar o convite.');
+    return;
+  }
+  onboarding_listarConvites();
+}
+
+async function onboarding_excluirConvite(id) {
+  const confirmado = confirm('Excluir esse convite? Se a pessoa ainda não usou o link, ele para de funcionar.');
+  if (!confirmado) return;
+
+  const supabase = getSupabase();
+  await supabase.from('convites').delete().eq('id', id);
+  onboarding_listarConvites();
 }
 
 // ---------- Tela de aceite do convite ----------
@@ -84,17 +136,27 @@ async function onboarding_verificarConviteNaURL() {
     .from('convites')
     .select('*')
     .eq('token', token)
-    .eq('usado', false)
     .maybeSingle();
 
   if (error || !data) {
-    alert('Esse link de convite não é válido ou já foi usado.');
-    return false;
+    irPara('conviteinvalido');
+    document.getElementById('conviteinvalido-texto').textContent =
+      'Esse link de convite não existe (talvez tenha sido excluído). Peça um novo ao admin da família.';
+    return true;
+  }
+
+  if (data.usado) {
+    irPara('conviteinvalido');
+    document.getElementById('conviteinvalido-texto').textContent =
+      'Esse convite já foi usado. Peça um novo ao admin da família.';
+    return true;
   }
 
   if (new Date(data.expira_em) < new Date()) {
-    alert('Esse link de convite expirou. Peça um novo ao admin da família.');
-    return false;
+    irPara('conviteinvalido');
+    document.getElementById('conviteinvalido-texto').textContent =
+      'Esse link de convite expirou. Peça um novo ao admin da família.';
+    return true;
   }
 
   onboarding_conviteAtual = data;

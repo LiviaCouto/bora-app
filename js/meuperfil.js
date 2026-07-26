@@ -1,5 +1,5 @@
 // ============================================================
-// BORA — Meu Perfil (editar nome, idade, objetivo, avatar)
+// BORA — Meu Perfil (editar nome, idade, objetivos, avatar, medidas)
 // ============================================================
 
 const OBJETIVOS_TREINO = [
@@ -25,9 +25,15 @@ function render_meuperfil() {
   document.getElementById('meuperfil-nome').value = perfil.nome || '';
   document.getElementById('meuperfil-idade').value = perfil.idade || '';
 
-  const select = document.getElementById('meuperfil-objetivo');
-  select.innerHTML = '<option value="">Selecione seu objetivo</option>' +
-    OBJETIVOS_TREINO.map(o => `<option value="${o.valor}" ${perfil.objetivo === o.valor ? 'selected' : ''}>${o.label}</option>`).join('');
+  const objetivosAtuais = (perfil.objetivo || '').split(',').map(s => s.trim()).filter(Boolean);
+  document.getElementById('meuperfil-objetivos-checkboxes').innerHTML = OBJETIVOS_TREINO.map(o => `
+    <label class="check-wrap">
+      <input type="checkbox" value="${o.valor}" ${objetivosAtuais.includes(o.valor) ? 'checked' : ''}>
+      <span>${o.label}</span>
+    </label>
+  `).join('');
+
+  medidas_carregarTudo();
 }
 
 function meuperfil_escolherAvatar() {
@@ -41,7 +47,9 @@ async function meuperfil_salvar() {
   const perfil = AppState.perfilAtual;
   const nome = document.getElementById('meuperfil-nome').value.trim();
   const idade = document.getElementById('meuperfil-idade').value || null;
-  const objetivo = document.getElementById('meuperfil-objetivo').value || null;
+
+  const checkboxes = document.querySelectorAll('#meuperfil-objetivos-checkboxes input[type="checkbox"]:checked');
+  const objetivo = Array.from(checkboxes).map(c => c.value).join(',') || null;
 
   if (!nome) {
     alert('O nome não pode ficar vazio.');
@@ -67,7 +75,7 @@ async function meuperfil_salvar() {
     return;
   }
 
-  salvarSessao(data); // atualiza a sessão local com os dados novos
-  mostrarToast('Perfil atualizado!', 'Suas informações foram salvas.');
-  irPara('home');
+  salvarSessao(data);
+  await gamificacao_verificarBadges(perfil.id);
+  mostrarModalSalvamento('Perfil atualizado!');
 }

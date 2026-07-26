@@ -154,12 +154,14 @@ body {
 .flex-wrap-botoes { display: flex; gap: 12px; flex-wrap: wrap; }
 
 /* Avatares */
-.avatar-opcao { background: none; border: 2px solid transparent; border-radius: 50%; padding: 2px; cursor: pointer; }
+.avatar-opcao { background: none; border: 2px solid transparent; border-radius: 50%; padding: 2px; cursor: pointer; width: 72px; height: 72px; }
 .avatar-opcao:hover { border-color: var(--chama); }
-.avatar-opcao img { width: 100%; border-radius: 50%; display: block; }
+.avatar-opcao img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
 
 /* Badge extra */
 .badge-chama { background: #FFE7E0; color: var(--chama-dark); }
+
+.select-papel { font-size: 12px; padding: 6px 8px; border-radius: var(--r-btn); border: 1.5px solid var(--border-light); background: #fff; font-family: var(--font-sans); }
 
 /* Textarea usa o mesmo estilo do input */
 textarea.input-demo { resize: vertical; font-family: var(--font-sans); }

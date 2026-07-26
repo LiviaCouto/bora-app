@@ -57,7 +57,7 @@
   <p class="muted" style="text-align:center">Vamos criar seu perfil</p>
 
   <div style="text-align:center;margin:16px 0">
-    <img id="onboarding-avatar-preview" src="icons/avatars/coelha-halteres.png" width="80" height="80" style="border-radius:50%">
+    <img id="onboarding-avatar-preview" src="icons/avatars/coelha-halteres.png" width="80" height="80" style="border-radius:50%;object-fit:cover">
     <div><button class="btn btn-outline btn-sm" style="margin-top:8px" onclick="onboarding_escolherAvatar()">Escolher avatar</button></div>
   </div>
 
@@ -183,7 +183,7 @@
     <div class="card">
       <div class="muted" style="margin-bottom:8px">Novo perfil</div>
       <div style="text-align:center;margin-bottom:10px">
-        <img id="admin-novo-perfil-avatar-preview" src="icons/avatars/coelha-halteres.png" width="56" height="56" style="border-radius:50%">
+        <img id="admin-novo-perfil-avatar-preview" src="icons/avatars/coelha-halteres.png" width="56" height="56" style="border-radius:50%;object-fit:cover">
         <input type="hidden" id="admin-novo-perfil-avatar-valor" value="coelha-halteres">
         <div><button class="btn btn-outline btn-sm" onclick="admin_escolherAvatarNovoPerfil()">Escolher avatar</button></div>
       </div>
@@ -196,7 +196,8 @@
       </select>
       <button class="btn btn-primary btn-full" onclick="admin_criarPerfil()">Criar perfil</button>
     </div>
-    <div id="admin-lista-perfis" style="margin-top:16px"></div>
+    <div class="card-label" style="margin-top:20px">Perfis existentes (papel e exclusão)</div>
+    <div id="admin-lista-perfis" style="margin-top:8px"></div>
   </div>
 
   <div id="admin-aba-treinos" class="admin-aba-conteudo" style="display:none">

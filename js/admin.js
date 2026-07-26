@@ -34,10 +34,35 @@ async function admin_listarPerfis() {
 
   container.innerHTML = (data || []).map(p => `
     <div class="admin-item-linha">
-      <div style="display:flex;align-items:center;gap:10px">${avatares_img(p.avatar_id, 32)}<strong>${p.nome}</strong> <span class="badge badge-neutral">${p.papel}</span></div>
-      <button class="btn btn-danger btn-sm" onclick="admin_apagarPerfil('${p.id}', '${p.nome.replace(/'/g, "\\'")}')">Excluir</button>
+      <div style="display:flex;align-items:center;gap:10px">
+        ${avatares_img(p.avatar_id, 32)}
+        <strong>${p.nome}</strong>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <select class="select-papel" onchange="admin_atualizarPapel('${p.id}', this.value)">
+          <option value="usuario" ${p.papel === 'usuario' ? 'selected' : ''}>Usuário</option>
+          <option value="admin" ${p.papel === 'admin' ? 'selected' : ''}>Admin</option>
+        </select>
+        <button class="btn btn-danger btn-sm" onclick="admin_apagarPerfil('${p.id}', '${p.nome.replace(/'/g, "\\'")}')">Excluir</button>
+      </div>
     </div>
   `).join('') || '<p class="muted">Nenhum perfil ainda.</p>';
+}
+
+async function admin_atualizarPapel(perfilId, novoPapel) {
+  const supabase = getSupabase();
+  const { error } = await supabase.from('perfis').update({ papel: novoPapel }).eq('id', perfilId);
+
+  if (error) {
+    alert('Não foi possível atualizar o papel desse perfil.');
+    return;
+  }
+
+  // Se o admin mudou o próprio papel (raro, mas possível), atualiza a sessão local também
+  if (AppState.perfilAtual && AppState.perfilAtual.id === perfilId) {
+    AppState.perfilAtual.papel = novoPapel;
+    salvarSessao(AppState.perfilAtual);
+  }
 }
 
 async function admin_criarPerfil() {

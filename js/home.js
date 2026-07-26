@@ -9,7 +9,10 @@ async function render_home() {
   if (perfil.papel === 'admin') admin_ativarAvisoTempoReal();
 
   document.getElementById('home-saudacao').innerHTML =
-    `<span style="display:inline-flex;align-items:center;gap:10px">${avatares_img(perfil.avatar_id, 40)} Oi, ${perfil.nome}!</span>`;
+    `<span style="display:inline-flex;align-items:center;gap:10px">
+      <span onclick="irPara('meuperfil')" style="cursor:pointer">${avatares_img(perfil.avatar_id, 40)}</span>
+      Oi, ${perfil.nome}!
+    </span>`;
 
   const supabase = getSupabase();
   const hoje = todayLocal();

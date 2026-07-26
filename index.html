@@ -91,7 +91,10 @@
 
 <!-- ========== HOME ========== -->
 <div id="secao-home" class="app-section">
-  <h2 id="home-saudacao" style="font-family:var(--font-display)"></h2>
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h2 id="home-saudacao" style="font-family:var(--font-display);margin:0"></h2>
+    <img src="icons/logo-bora-simbolo.png" alt="Bora" style="width:36px">
+  </div>
   <div id="home-card-treino" style="margin-top:16px"></div>
   <div id="home-area-checkin" style="margin-top:16px"></div>
 
@@ -113,7 +116,43 @@
   <div id="home-lista-checkins" style="margin-top:8px"></div>
 </div>
 
-<!-- ========== TREINO (escolha A/B) ========== -->
+<!-- ========== MEU PERFIL ========== -->
+<div id="secao-meuperfil" class="app-section">
+  <button class="btn btn-outline btn-sm" onclick="irPara('home')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Voltar</button>
+  <h2 style="font-family:var(--font-display);margin-top:12px">Meu Perfil</h2>
+
+  <div style="text-align:center;margin:16px 0">
+    <img id="meuperfil-avatar-preview" src="icons/logo-bora-simbolo.png" width="88" height="88" style="border-radius:50%;object-fit:cover">
+    <div><button class="btn btn-outline btn-sm" style="margin-top:8px" onclick="meuperfil_escolherAvatar()">Trocar avatar</button></div>
+  </div>
+
+  <div class="input-wrap">
+    <label class="input-label">Nome</label>
+    <input class="input-demo" id="meuperfil-nome">
+  </div>
+  <div class="input-wrap">
+    <label class="input-label">Idade</label>
+    <input class="input-demo" id="meuperfil-idade" type="number">
+  </div>
+  <div class="input-wrap">
+    <label class="input-label">Objetivo</label>
+    <select class="input-demo" id="meuperfil-objetivo"></select>
+  </div>
+
+  <button class="btn btn-primary btn-full" onclick="meuperfil_salvar()">Salvar alterações</button>
+
+  <div class="rodape-creditos">Desenvolvido por Lívia Couto · 2026 · Todos os direitos reservados.</div>
+</div>
+<!-- ========== DESAFIOS (em construção) ========== -->
+<div id="secao-desafios" class="app-section">
+  <button class="btn btn-outline btn-sm" onclick="irPara('progresso')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Voltar</button>
+  <div class="desafios-em-breve">
+    <svg class="desafios-haltere" viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="var(--chama)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h4M16 12h4M8 8v8M16 8v8M2 12h2M20 12h2"/></svg>
+    <div style="font-family:var(--font-display);font-weight:700;font-size:20px;margin-top:14px">Desafios em breve</div>
+    <p class="muted" style="max-width:280px;margin:6px auto 0">Estamos preparando desafios em família — tipo streak de dias seguidos, meta de água, e mais. Aguarde!</p>
+  </div>
+</div>
+
 <div id="secao-treino" class="app-section">
   <div style="display:flex;justify-content:space-between;align-items:center">
     <h2 style="font-family:var(--font-display);margin:0">Treino de hoje</h2>
@@ -244,6 +283,10 @@
       <span class="card-menu-progresso-icone" style="background:var(--verde-check-bg);color:var(--verde-check)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg></span>
       <span>Comparar ciclos</span>
     </button>
+    <button class="card-menu-progresso" onclick="irPara('desafios')">
+      <span class="card-menu-progresso-icone" style="background:var(--frevo-pale, #FCE1EB);color:var(--frevo)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h4M16 12h4M8 8v8M16 8v8M2 12h2M20 12h2"/></svg></span>
+      <span>Desafios</span>
+    </button>
   </div>
 </div>
 
@@ -288,12 +331,12 @@
 <div id="secao-admin" class="app-section">
   <h2 style="font-family:var(--font-display)">Admin</h2>
   <div class="admin-tabs" style="flex-wrap:wrap">
-    <button class="admin-aba-botao" data-aba="perfis" onclick="admin_abrirAba('perfis')">Perfis</button>
-    <button class="admin-aba-botao" data-aba="treinos" onclick="admin_abrirAba('treinos')">Treinos</button>
-    <button class="admin-aba-botao" data-aba="familia" onclick="admin_abrirAba('familia')">Família</button>
-    <button class="admin-aba-botao" data-aba="convites" onclick="admin_abrirAba('convites')">Convites</button>
-    <button class="admin-aba-botao" data-aba="feedbacks" onclick="admin_abrirAba('feedbacks')">Feedbacks</button>
-    <button class="admin-aba-botao" data-aba="fotos" onclick="admin_abrirAba('fotos')">Fotos</button>
+    <button class="admin-aba-botao" data-aba="perfis" onclick="admin_abrirAba('perfis')"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg> Perfis</button>
+    <button class="admin-aba-botao" data-aba="treinos" onclick="admin_abrirAba('treinos')"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h4M16 12h4M8 8v8M16 8v8"/></svg> Treinos</button>
+    <button class="admin-aba-botao" data-aba="familia" onclick="admin_abrirAba('familia')"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3.5 3-6 7-6s7 2.5 7 6"/><circle cx="18" cy="9" r="2.5"/><path d="M16 20c0-2.5 1.5-4.5 4-5"/></svg> Família</button>
+    <button class="admin-aba-botao" data-aba="convites" onclick="admin_abrirAba('convites')"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></svg> Convites</button>
+    <button class="admin-aba-botao" data-aba="feedbacks" onclick="admin_abrirAba('feedbacks')"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> Feedbacks</button>
+    <button class="admin-aba-botao" data-aba="fotos" onclick="admin_abrirAba('fotos')"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 15l4-4 4 4 6-6"/></svg> Fotos</button>
   </div>
 
   <div id="admin-aba-perfis" class="admin-aba-conteudo">
@@ -512,6 +555,7 @@
 <script src="js/gamificacao.js"></script>
 <script src="js/checkin.js"></script>
 <script src="js/frases.js"></script>
+<script src="js/meuperfil.js"></script>
 <script src="js/home.js"></script>
 <script src="js/treino.js"></script>
 <script src="js/meutreino.js"></script>

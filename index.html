@@ -88,18 +88,30 @@
   <div id="treino-area-escolha" style="margin-top:16px"></div>
 </div>
 
+<!-- ========== CHECKLIST DO TREINO (lista de exercícios) ========== -->
+<div id="secao-treinolista" class="app-section">
+  <button class="btn btn-outline btn-sm" onclick="irPara('treino')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Trocar treino</button>
+  <h2 style="font-family:var(--font-display);margin-top:12px" id="treinolista-titulo">Treino A</h2>
+  <p class="muted" id="treinolista-progresso"></p>
+  <div id="treinolista-itens" style="margin-top:16px"></div>
+  <div id="treinolista-finalizar" style="margin-top:16px"></div>
+</div>
+
 <!-- ========== EXECUÇÃO GUIADA ========== -->
 <div id="secao-execucao" class="app-section">
-  <div id="execucao-balao-explicacao" class="balao-explicacao">
+  <button class="btn btn-outline btn-sm" onclick="irPara('treinolista')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Ver lista do treino</button>
+
+  <div id="execucao-balao-explicacao" class="balao-explicacao" style="margin-top:12px">
     <strong>Série</strong> = quantas vezes você repete o exercício todo. <strong>Repetição</strong> = quantos movimentos dentro de cada série. <strong>Descanso</strong> = a pausa entre uma série e outra.
     <div style="margin-top:8px"><button class="btn btn-outline btn-sm" onclick="execucao_fecharBalao()">Entendi</button></div>
   </div>
 
-  <div id="execucao-conteudo">
+  <div id="execucao-conteudo" style="margin-top:12px">
     <div class="execucao-card">
       <div class="label-sol" id="execucao-progresso" style="color:var(--sol)"></div>
       <div style="font-family:var(--font-display);font-weight:700;font-size:22px;margin-top:4px" id="execucao-nome-exercicio"></div>
       <div id="execucao-maquina" style="font-size:12px;color:rgba(255,255,255,.7);margin-top:4px"></div>
+      <div id="execucao-video" style="margin:14px 0"></div>
       <div class="execucao-instrucao-box" id="execucao-instrucao"></div>
       <div class="execucao-serie" id="execucao-serie-contador"></div>
       <button class="btn btn-primary btn-full" onclick="execucao_terminarSerie()">Terminei essa série</button>

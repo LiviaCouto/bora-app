@@ -1,8 +1,11 @@
 // ============================================================
-// BORA — Escolha do treino do dia (A ou B)
+// BORA — Escolha do treino do dia (A/B) + checklist de exercícios
 // ============================================================
 
 let treino_cicloAtivo = null;
+let treino_listaExercicios = [];
+let treino_concluidos = new Set(); // índices já finalizados nesta sessão
+let treino_horaInicio = null;
 
 async function render_treino() {
   const perfil = AppState.perfilAtual;
@@ -36,17 +39,75 @@ async function render_treino() {
 
   const letras = [...new Set((exercicios || []).map(e => e.letra_treino))].sort();
 
+  if (letras.length === 0) {
+    area.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-title">Ciclo criado, mas sem exercícios ainda</div>
+        <div class="empty-desc">Peça ao admin pra colar ou cadastrar os exercícios</div>
+      </div>`;
+    return;
+  }
+
   area.innerHTML = `
     <p class="muted" style="margin-bottom:16px">Qual treino você vai fazer hoje?</p>
     <div class="flex-wrap-botoes">
       ${letras.map(l => `
-        <button class="btn btn-primary btn-lg" onclick="treino_iniciarExecucao('${l}')">Treino ${l}</button>
+        <button class="btn btn-primary btn-lg" onclick="treino_abrirLista('${l}')">Treino ${l}</button>
       `).join('')}
     </div>
   `;
 }
 
-function treino_iniciarExecucao(letra) {
+async function treino_abrirLista(letra) {
+  const supabase = getSupabase();
+
+  const { data } = await supabase
+    .from('exercicios')
+    .select('*')
+    .eq('ciclo_id', treino_cicloAtivo.id)
+    .eq('letra_treino', letra)
+    .order('ordem');
+
+  treino_listaExercicios = data || [];
+  treino_concluidos = new Set();
+  treino_horaInicio = new Date().toISOString();
   AppState.treinoEscolhidoHoje = letra;
+
+  irPara('treinolista');
+}
+
+function render_treinolista() {
+  const letra = AppState.treinoEscolhidoHoje;
+  const total = treino_listaExercicios.length;
+  const feitos = treino_concluidos.size;
+
+  document.getElementById('treinolista-titulo').textContent = `Treino ${letra}`;
+  document.getElementById('treinolista-progresso').textContent = `${feitos} de ${total} concluídos`;
+
+  document.getElementById('treinolista-itens').innerHTML = treino_listaExercicios.map((ex, i) => {
+    const feito = treino_concluidos.has(i);
+    const fraseSeries = ex.series_min === ex.series_max ? `${ex.series_min}` : `${ex.series_min}-${ex.series_max}`;
+    const fraseReps = ex.reps_min === ex.reps_max ? `${ex.reps_min}` : `${ex.reps_min}-${ex.reps_max}`;
+    return `
+      <button class="item-checklist ${feito ? 'concluido' : ''}" onclick="treino_abrirExercicio(${i})">
+        <span class="item-checklist-status">${feito ? icon('check-circle', 22) : icon('circulo-vazio', 22)}</span>
+        <span class="item-checklist-texto">
+          <strong>${ex.nome}</strong>
+          <span class="muted">${fraseSeries} séries × ${fraseReps} reps</span>
+        </span>
+      </button>
+    `;
+  }).join('');
+
+  const areaFinalizar = document.getElementById('treinolista-finalizar');
+  if (feitos === total && total > 0) {
+    areaFinalizar.innerHTML = `<button class="btn btn-primary btn-full" onclick="execucao_perguntarCansaco()">Finalizar treino</button>`;
+  } else {
+    areaFinalizar.innerHTML = '';
+  }
+}
+
+function treino_abrirExercicio(indice) {
+  execucao_indiceAtual = indice;
   irPara('execucao');
 }

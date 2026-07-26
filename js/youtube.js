@@ -2,18 +2,20 @@
 // BORA — Integração YouTube Data API v3
 // Busca automática de vídeo demonstrativo, mas SEMPRE com
 // confirmação de 1 clique antes de vincular ao exercício (Opção A).
+// Vincula direto na tabela `exercicios` — funciona pra qualquer
+// exercício, inclusive os importados por colar texto.
 // ============================================================
 
 let youtube_exercicioAlvoId = null;
 let youtube_exercicioAlvoNome = null;
 
-async function youtube_buscarPara(bibliotecaExercicioId, nomeExercicio) {
+async function youtube_buscarParaExercicio(exercicioId, nomeExercicio) {
   if (!CONFIG.YOUTUBE_API_KEY || CONFIG.YOUTUBE_API_KEY.includes('SUA_')) {
     alert('A chave da API do YouTube ainda não foi configurada em js/config.js.');
     return;
   }
 
-  youtube_exercicioAlvoId = bibliotecaExercicioId;
+  youtube_exercicioAlvoId = exercicioId;
   youtube_exercicioAlvoNome = nomeExercicio;
 
   const query = encodeURIComponent(`${nomeExercicio} execução técnica academia`);
@@ -49,8 +51,8 @@ async function youtube_buscarPara(bibliotecaExercicioId, nomeExercicio) {
 async function youtube_confirmar(videoId) {
   const supabase = getSupabase();
   const { error } = await supabase
-    .from('biblioteca_exercicios')
-    .update({ video_id: videoId, video_confirmado: true })
+    .from('exercicios')
+    .update({ video_id: videoId })
     .eq('id', youtube_exercicioAlvoId);
 
   if (error) {
@@ -59,7 +61,13 @@ async function youtube_confirmar(videoId) {
   }
 
   document.getElementById('modal-youtube').style.display = 'none';
-  alert(`Vídeo vinculado ao exercício "${youtube_exercicioAlvoNome}"!`);
+
+  // Atualiza o exercício em memória e re-renderiza a tela de execução, se for o caso
+  const ex = treino_listaExercicios.find(e => e.id === youtube_exercicioAlvoId);
+  if (ex) ex.video_id = videoId;
+  if (document.getElementById('secao-execucao').style.display !== 'none') {
+    execucao_renderizarExercicioAtual();
+  }
 }
 
 function youtube_fechar() {

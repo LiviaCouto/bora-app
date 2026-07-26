@@ -71,6 +71,8 @@ const ICONS = {
   bike: '<circle cx="6" cy="17" r="3.5"/><circle cx="18" cy="17" r="3.5"/><path d="M6 17 10 8h5l3 9M10 8 8 5h-2M13 8l2.5 5.5"/>',
   sparkles: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.5 5.5l2.5 2.5M16 16l2.5 2.5M18.5 5.5 16 8M8 16l-2.5 2.5"/>',
   repeat: '<path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>',
+  'circulo-vazio': '<circle cx="12" cy="12" r="9"/>',
+  video: '<rect x="3" y="5" width="14" height="14" rx="2"/><path d="M17 9.5 21 6.5v11L17 14.5"/>',
 };
 
 function icon(name, size = 20) {

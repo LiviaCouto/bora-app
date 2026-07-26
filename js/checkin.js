@@ -108,7 +108,7 @@ async function checkin_registrarLivre() {
 }
 
 // Usado pelo fluxo de treino de ficha (musculação), ao concluir a execução guiada
-async function checkin_finalizarTreino(cicloId, letraTreino, nivelCansaco) {
+async function checkin_finalizarTreino(cicloId, letraTreino, nivelCansaco, horaInicio, horaFim) {
   const supabase = getSupabase();
   const perfil = AppState.perfilAtual;
 
@@ -125,6 +125,8 @@ async function checkin_finalizarTreino(cicloId, letraTreino, nivelCansaco) {
     ciclo_id: cicloId,
     letra_treino: letraTreino,
     nivel_cansaco: nivelCansaco || null,
+    hora_inicio: horaInicio || null,
+    hora_fim: horaFim || null,
   });
 
   if (error) {

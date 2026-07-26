@@ -59,11 +59,11 @@ function execucao_renderizarExercicioAtual() {
       <div class="video-wrap">
         <iframe src="https://www.youtube.com/embed/${ex.video_id}" frameborder="0" allowfullscreen></iframe>
       </div>
-      <button class="btn btn-ghost btn-sm" onclick="youtube_buscarParaExercicio('${ex.id}', '${ex.nome.replace(/'/g, "\\'")}')">Trocar vídeo</button>
+      <button class="btn btn-outline-claro btn-sm" onclick="youtube_buscarParaExercicio('${ex.id}', '${ex.nome.replace(/'/g, "\\'")}')">Trocar vídeo</button>
     `;
   } else {
     areaVideo.innerHTML = `
-      <button class="btn btn-outline btn-sm" onclick="youtube_buscarParaExercicio('${ex.id}', '${ex.nome.replace(/'/g, "\\'")}')">${icon('video', 14)} Vincular vídeo de execução</button>
+      <button class="btn btn-outline-claro btn-sm" onclick="youtube_buscarParaExercicio('${ex.id}', '${ex.nome.replace(/'/g, "\\'")}')">${icon('video', 14)} Vincular vídeo de execução</button>
     `;
   }
 }

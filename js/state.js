@@ -15,7 +15,22 @@ function salvarSessao(perfil) {
   const expiraEm = Date.now() + CONFIG.SESSAO_HORAS * 60 * 60 * 1000;
   localStorage.setItem('bora_sessao', JSON.stringify({ perfil, expiraEm }));
   AppState.perfilAtual = perfil;
+  resetarEstadoDeNavegacao();
   atualizarTabsPorPapel();
+}
+
+// Zera qualquer variável de "contexto atual" de outras telas, pra garantir
+// que nada de uma sessão anterior (de outro perfil) fique resíduo.
+function resetarEstadoDeNavegacao() {
+  if (typeof treino_cicloAtivo !== 'undefined') treino_cicloAtivo = null;
+  if (typeof treino_listaExercicios !== 'undefined') treino_listaExercicios = [];
+  if (typeof treino_concluidos !== 'undefined') treino_concluidos = new Set();
+  if (typeof treino_ciclosAtivos !== 'undefined') treino_ciclosAtivos = [];
+  if (typeof meutreino_cicloEmEdicao !== 'undefined') meutreino_cicloEmEdicao = null;
+  if (typeof criartreino_perfilId !== 'undefined') criartreino_perfilId = null;
+  if (typeof criartreino_cicloIdCriado !== 'undefined') criartreino_cicloIdCriado = null;
+  if (typeof criartreino_metodoEscolhido !== 'undefined') criartreino_metodoEscolhido = null;
+  if (typeof execucao_indiceAtual !== 'undefined') execucao_indiceAtual = 0;
 }
 
 function atualizarTabsPorPapel() {
@@ -46,6 +61,7 @@ function encerrarSessao() {
   localStorage.removeItem('bora_sessao');
   sessionStorage.removeItem('bora_ultima_secao');
   AppState.perfilAtual = null;
+  resetarEstadoDeNavegacao();
   irPara('auth');
 }
 

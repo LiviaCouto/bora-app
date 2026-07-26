@@ -23,6 +23,7 @@ function admin_abrirAba(aba) {
   if (aba === 'treinos') admin_listarPerfisParaCiclo();
   if (aba === 'familia') admin_visaoFamilia();
   if (aba === 'convites') onboarding_listarConvites();
+  if (aba === 'feedbacks') admin_listarFeedbacks();
 }
 
 // ---------- PERFIS ----------
@@ -65,42 +66,6 @@ async function admin_atualizarPapel(perfilId, novoPapel) {
   }
 }
 
-async function admin_criarPerfil() {
-  const nome = document.getElementById('admin-novo-perfil-nome').value.trim();
-  const pin = document.getElementById('admin-novo-perfil-pin').value.trim();
-  const relacao = document.getElementById('admin-novo-perfil-relacao').value.trim();
-  const papel = document.getElementById('admin-novo-perfil-papel').value;
-  const avatarId = document.getElementById('admin-novo-perfil-avatar-valor').value || 'coelha-halteres';
-
-  if (!nome || pin.length !== 4) {
-    alert('Preencha o nome e um PIN de 4 dígitos.');
-    return;
-  }
-
-  const supabase = getSupabase();
-  const pin_hash = await hashPin(pin);
-
-  const { error } = await supabase.from('perfis').insert({ nome, pin_hash, relacao, papel, avatar_id: avatarId });
-  if (error) {
-    alert('Não foi possível criar o perfil.');
-    console.error(error);
-    return;
-  }
-
-  document.getElementById('admin-novo-perfil-nome').value = '';
-  document.getElementById('admin-novo-perfil-pin').value = '';
-  document.getElementById('admin-novo-perfil-avatar-valor').value = 'coelha-halteres';
-  document.getElementById('admin-novo-perfil-avatar-preview').src = 'icons/avatars/coelha-halteres.png';
-  admin_listarPerfis();
-}
-
-function admin_escolherAvatarNovoPerfil() {
-  avatares_abrirSeletor((avatarId) => {
-    document.getElementById('admin-novo-perfil-avatar-valor').value = avatarId;
-    document.getElementById('admin-novo-perfil-avatar-preview').src = `icons/avatars/${avatarId}.png`;
-  });
-}
-
 async function admin_apagarPerfil(id, nome) {
   const confirmado = confirm(`Apagar o perfil de ${nome}? Todo o histórico (treinos, check-ins, progresso) vai junto e não tem como desfazer.`);
   if (!confirmado) return;
@@ -137,9 +102,25 @@ async function admin_carregarCiclosDoPerfil() {
   container.innerHTML = (data || []).map(c => `
     <div class="admin-item-linha">
       <div>Ciclo desde ${formatarDataBR(c.data_inicio)} <span class="badge ${c.status === 'ativo' ? 'badge-success' : 'badge-neutral'}">${c.status}</span></div>
-      <button class="btn btn-outline btn-sm" onclick="admin_gerenciarExercicios('${c.id}')">Gerenciar exercícios</button>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-outline btn-sm" onclick="admin_gerenciarExercicios('${c.id}')">Editar exercícios</button>
+        <button class="btn btn-danger btn-sm" onclick="admin_apagarCiclo('${c.id}')">Excluir</button>
+      </div>
     </div>
   `).join('') || '<p class="muted">Nenhum ciclo cadastrado ainda.</p>';
+}
+
+async function admin_apagarCiclo(cicloId) {
+  const confirmado = confirm('Excluir esse ciclo? Todos os exercícios, o histórico de check-in e o progresso vinculados a ele serão perdidos e não tem como desfazer.');
+  if (!confirmado) return;
+
+  const supabase = getSupabase();
+  const { error } = await supabase.from('ciclos').delete().eq('id', cicloId);
+  if (error) {
+    alert('Não foi possível excluir o ciclo.');
+    return;
+  }
+  admin_carregarCiclosDoPerfil();
 }
 
 async function admin_criarCiclo() {
@@ -232,7 +213,44 @@ async function admin_apagarExercicio(id) {
   admin_listarExercicios();
 }
 
-// ---------- VISÃO DA FAMÍLIA ----------
+// ---------- FEEDBACKS ----------
+
+async function admin_listarFeedbacks() {
+  const supabase = getSupabase();
+  const { data } = await supabase
+    .from('feedbacks')
+    .select('*, perfis(nome)')
+    .order('criado_em', { ascending: false });
+
+  const rotuloCategoria = { bug: 'Bug', sugestao: 'Sugestão', elogio: 'Elogio' };
+
+  document.getElementById('admin-lista-feedbacks').innerHTML = (data || []).map(f => `
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <span class="badge badge-neutral">${rotuloCategoria[f.categoria] || f.categoria}</span>
+          <strong style="margin-left:6px">${f.perfis ? f.perfis.nome : 'Anônimo'}</strong>
+          <div class="muted" style="font-size:11px">${formatarDataBR(f.criado_em ? f.criado_em.split('T')[0] : '')}</div>
+        </div>
+        <span class="badge ${f.status === 'resolvido' ? 'badge-success' : 'badge-sol'}">${f.status === 'resolvido' ? 'Resolvido' : 'Não resolvido'}</span>
+      </div>
+      <p style="margin-top:10px;font-size:13px">${f.texto}</p>
+      <button class="btn btn-outline btn-sm" style="margin-top:8px" onclick="admin_alternarStatusFeedback('${f.id}', '${f.status === 'resolvido' ? 'novo' : 'resolvido'}')">
+        ${f.status === 'resolvido' ? 'Reabrir' : 'Marcar como resolvido'}
+      </button>
+    </div>
+  `).join('') || '<p class="muted">Nenhum feedback recebido ainda.</p>';
+}
+
+async function admin_alternarStatusFeedback(id, novoStatus) {
+  const supabase = getSupabase();
+  const { error } = await supabase.from('feedbacks').update({ status: novoStatus }).eq('id', id);
+  if (error) {
+    alert('Não foi possível atualizar o status.');
+    return;
+  }
+  admin_listarFeedbacks();
+}
 
 // ---------- Aviso em tempo real (só enquanto o app está aberto) ----------
 

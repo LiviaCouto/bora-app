@@ -1,14 +1,8 @@
 // ============================================================
 // BORA — Onboarding via convite
-// Admin gera um link único; a pessoa abre o link, escolhe avatar,
-// cria o próprio PIN e (opcional) já sobe o treino em foto/texto.
-//
-// Observação importante: como o Bora é um site estático (GitHub Pages),
-// o envio de EMAIL de verdade exigiria um backend (ex: Supabase Edge
-// Function + serviço de email). Por enquanto, o "envio" é manual:
-// o admin copia o link gerado e manda por WhatsApp/e-mail à mão
-// (o botão "mailto" abre o app de e-mail do próprio admin já com
-// o link preenchido, sem precisar de servidor).
+// Admin gera um link único (com o nome já definido); a pessoa abre
+// o link, escolhe avatar, seleciona a relação e cria o próprio PIN
+// (com confirmação e opção de visualizar).
 // ============================================================
 
 function onboarding_gerarToken() {
@@ -20,11 +14,16 @@ async function onboarding_criarConvite() {
   const nomeSugerido = document.getElementById('admin-convite-nome').value.trim();
   const email = document.getElementById('admin-convite-email').value.trim();
 
+  if (!nomeSugerido) {
+    alert('Escreva o nome da pessoa antes de gerar o convite.');
+    return;
+  }
+
   const supabase = getSupabase();
   const token = onboarding_gerarToken();
 
   const { error } = await supabase.from('convites').insert({
-    nome_sugerido: nomeSugerido || null,
+    nome_sugerido: nomeSugerido,
     email: email || null,
     token,
   });
@@ -35,7 +34,7 @@ async function onboarding_criarConvite() {
   }
 
   const link = `${window.location.origin}${window.location.pathname}?convite=${token}`;
-  const mensagem = encodeURIComponent(`Oi! Entra no Bora (nosso app de treino) por esse link: ${link}`);
+  const mensagem = encodeURIComponent(`Oi ${nomeSugerido}! Entra no Bora (nosso app de treino) por esse link: ${link}`);
 
   document.getElementById('admin-convite-link-gerado').innerHTML = `
     <div class="admin-item-linha">
@@ -48,6 +47,8 @@ async function onboarding_criarConvite() {
     </div>
   `;
 
+  document.getElementById('admin-convite-nome').value = '';
+  document.getElementById('admin-convite-email').value = '';
   onboarding_listarConvites();
 }
 
@@ -95,7 +96,6 @@ async function onboarding_verificarConviteNaURL() {
   }
 
   onboarding_conviteAtual = data;
-  document.getElementById('onboarding-nome').value = data.nome_sugerido || '';
   irPara('onboarding');
   return true;
 }
@@ -103,7 +103,12 @@ async function onboarding_verificarConviteNaURL() {
 function render_onboarding() {
   onboarding_avatarEscolhido = 'coelha-halteres';
   document.getElementById('onboarding-avatar-preview').src = 'icons/avatars/coelha-halteres.png';
+  document.getElementById('onboarding-titulo-nome').textContent = `Bem-vindo(a), ${onboarding_conviteAtual.nome_sugerido}!`;
+  document.getElementById('onboarding-relacao').value = '';
   document.getElementById('onboarding-pin').value = '';
+  document.getElementById('onboarding-pin-confirmar').value = '';
+  document.getElementById('onboarding-erro-pin').style.display = 'none';
+  document.getElementById('onboarding-btn-criar').disabled = true;
 }
 
 function onboarding_escolherAvatar() {
@@ -113,15 +118,31 @@ function onboarding_escolherAvatar() {
   });
 }
 
-async function onboarding_finalizar() {
-  const nome = document.getElementById('onboarding-nome').value.trim();
-  const pin = document.getElementById('onboarding-pin').value.trim();
-  const relacao = document.getElementById('onboarding-relacao').value.trim();
+function onboarding_alternarVisibilidadePin(inputId, botao) {
+  const input = document.getElementById(inputId);
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
 
-  if (!nome || pin.length !== 4) {
-    alert('Preencha seu nome e um PIN de 4 dígitos.');
-    return;
-  }
+function onboarding_validarFormulario() {
+  const relacao = document.getElementById('onboarding-relacao').value;
+  const pin = document.getElementById('onboarding-pin').value;
+  const pinConfirmar = document.getElementById('onboarding-pin-confirmar').value;
+  const erroEl = document.getElementById('onboarding-erro-pin');
+  const btn = document.getElementById('onboarding-btn-criar');
+
+  const pinsPreenchidos = pin.length === 4 && pinConfirmar.length === 4;
+  const pinsIguais = pin === pinConfirmar;
+
+  erroEl.style.display = (pinsPreenchidos && !pinsIguais) ? 'block' : 'none';
+
+  const tudoValido = relacao && pinsPreenchidos && pinsIguais;
+  btn.disabled = !tudoValido;
+}
+
+async function onboarding_finalizar() {
+  const nome = onboarding_conviteAtual.nome_sugerido;
+  const relacao = document.getElementById('onboarding-relacao').value;
+  const pin = document.getElementById('onboarding-pin').value;
 
   const supabase = getSupabase();
   const pin_hash = await hashPin(pin);
@@ -144,6 +165,6 @@ async function onboarding_finalizar() {
   await supabase.from('convites').update({ usado: true }).eq('id', onboarding_conviteAtual.id);
 
   salvarSessao(perfil);
-  window.history.replaceState({}, '', window.location.pathname); // remove ?convite= da URL
+  window.history.replaceState({}, '', window.location.pathname);
   irPara('home');
 }

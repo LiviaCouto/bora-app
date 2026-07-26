@@ -2,7 +2,7 @@
 // BORA — Service Worker (cache offline básico)
 // ============================================================
 
-const CACHE_NOME = 'bora-v10';
+const CACHE_NOME = 'bora-v11';
 const ARQUIVOS_PARA_CACHE = [
   './',
   './index.html',
@@ -20,6 +20,7 @@ const ARQUIVOS_PARA_CACHE = [
   './js/frases.js',
   './js/home.js',
   './js/treino.js',
+  './js/meutreino.js',
   './js/execucao.js',
   './js/finalizar.js',
   './js/progresso.js',
@@ -29,7 +30,6 @@ const ARQUIVOS_PARA_CACHE = [
   './js/dayoff.js',
   './js/uploadmd.js',
   './js/youtube.js',
-  './js/notificacoes.js',
   './js/relatorio.js',
   './js/admin.js',
   './js/feedback.js',

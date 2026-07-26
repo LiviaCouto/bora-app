@@ -60,6 +60,7 @@ body {
 .btn-sm { padding: 8px 14px; font-size: 12px; }
 .btn-lg { padding: 16px 30px; font-size: 16px; }
 .btn-full { width: 100%; justify-content: center; }
+.btn[disabled] { opacity: .4; cursor: not-allowed; pointer-events: none; }
 
 .card { background: #fff; border: 1px solid var(--border-light); border-radius: var(--r-card); padding: 20px; }
 
@@ -161,6 +162,7 @@ body {
 
 /* Badge extra */
 .badge-chama { background: #FFE7E0; color: var(--chama-dark); }
+.badge-sol { background: var(--sol-pale); color: var(--aviso); }
 
 .select-papel { font-size: 12px; padding: 6px 8px; border-radius: var(--r-btn); border: 1.5px solid var(--border-light); background: #fff; font-family: var(--font-sans); }
 
@@ -202,6 +204,14 @@ body {
 .btn-icone-topo {
   background: var(--mare); color: #fff; border: none; border-radius: 12px;
   width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+
+/* Campo de PIN com botão de mostrar/ocultar (onboarding) */
+.input-wrap-pin { position: relative; margin-bottom: 10px; }
+.input-wrap-pin .input-demo { padding-right: 44px; margin-bottom: 0; letter-spacing: 4px; }
+.btn-olho {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 6px;
 }
 .execucao-card-descanso {
   background: var(--sol-pale); border: 2px solid var(--sol); border-radius: var(--r-card-lg);

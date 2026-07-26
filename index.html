@@ -53,7 +53,7 @@
   <div style="text-align:center;margin-bottom:4px">
     <img src="icons/logo-bora-simbolo.png" alt="Bora" style="width:90px">
   </div>
-  <h2 style="font-family:var(--font-display);text-align:center">Bem-vindo(a) ao Bora!</h2>
+  <h2 style="font-family:var(--font-display);text-align:center;font-size:26px" id="onboarding-titulo-nome">Bem-vindo(a)!</h2>
   <p class="muted" style="text-align:center">Vamos criar seu perfil</p>
 
   <div style="text-align:center;margin:16px 0">
@@ -61,10 +61,31 @@
     <div><button class="btn btn-outline btn-sm" style="margin-top:8px" onclick="onboarding_escolherAvatar()">Escolher avatar</button></div>
   </div>
 
-  <input class="input-demo" id="onboarding-nome" placeholder="Seu nome">
-  <input class="input-demo" id="onboarding-relacao" placeholder="Relação (ex: esposo, filha)">
-  <input class="input-demo" id="onboarding-pin" placeholder="Crie um PIN de 4 dígitos" maxlength="4">
-  <button class="btn btn-primary btn-full" onclick="onboarding_finalizar()">Criar meu perfil</button>
+  <select class="input-demo" id="onboarding-relacao" onchange="onboarding_validarFormulario()">
+    <option value="">Qual sua relação com a família?</option>
+    <option value="mae">Mãe</option>
+    <option value="filha">Filha</option>
+    <option value="esposo">Esposo(a)</option>
+    <option value="irmao">Irmão/Irmã</option>
+    <option value="amigo">Amigo(a)</option>
+    <option value="outro">Outro</option>
+  </select>
+
+  <div class="input-wrap-pin">
+    <input class="input-demo" id="onboarding-pin" type="password" placeholder="Crie um PIN de 4 dígitos" maxlength="4" inputmode="numeric" oninput="onboarding_validarFormulario()">
+    <button type="button" class="btn-olho" onclick="onboarding_alternarVisibilidadePin('onboarding-pin', this)">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+    </button>
+  </div>
+  <div class="input-wrap-pin">
+    <input class="input-demo" id="onboarding-pin-confirmar" type="password" placeholder="Confirme o PIN" maxlength="4" inputmode="numeric" oninput="onboarding_validarFormulario()">
+    <button type="button" class="btn-olho" onclick="onboarding_alternarVisibilidadePin('onboarding-pin-confirmar', this)">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+    </button>
+  </div>
+  <p id="onboarding-erro-pin" class="erro-msg" style="display:none">Os PINs não coincidem</p>
+
+  <button class="btn btn-primary btn-full" id="onboarding-btn-criar" onclick="onboarding_finalizar()" disabled>Criar meu perfil</button>
 </div>
 
 <!-- ========== HOME ========== -->
@@ -93,8 +114,49 @@
 
 <!-- ========== TREINO (escolha A/B) ========== -->
 <div id="secao-treino" class="app-section">
-  <h2 style="font-family:var(--font-display)">Treino de hoje</h2>
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h2 style="font-family:var(--font-display);margin:0">Treino de hoje</h2>
+    <button class="btn-icone-topo" onclick="irPara('meutreino')" title="Gerenciar meu treino">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14.5 4.5-9 9L4 18l4.5-1.5 9-9Z"/><path d="M13 6l5 5"/></svg>
+    </button>
+  </div>
   <div id="treino-area-escolha" style="margin-top:16px"></div>
+</div>
+
+<!-- ========== MEU TREINO (gestão do próprio ciclo) ========== -->
+<div id="secao-meutreino" class="app-section">
+  <button class="btn btn-outline btn-sm" onclick="irPara('treino')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Voltar</button>
+  <h2 style="font-family:var(--font-display);margin-top:12px">Gerenciar meu treino</h2>
+  <p class="muted">Aqui você cria seu ciclo e adiciona exercícios manualmente.</p>
+
+  <div class="card" style="margin-top:16px">
+    <div class="muted" style="margin-bottom:8px">Novo ciclo</div>
+    <input class="input-demo" id="meutreino-ciclo-responsavel" placeholder="Nome do professor (opcional)">
+    <input class="input-demo" id="meutreino-ciclo-cref" placeholder="CREF (opcional)">
+    <button class="btn btn-primary btn-full" onclick="meutreino_criarCiclo()">Criar ciclo</button>
+  </div>
+
+  <div id="meutreino-lista-ciclos" style="margin-top:16px"></div>
+
+  <div id="meutreino-painel-exercicios" style="display:none;margin-top:20px">
+    <div class="card">
+      <div class="muted" style="margin-bottom:8px">Adicionar exercício</div>
+      <input class="input-demo" id="meutreino-ex-letra" placeholder="Letra do treino (A, B...)">
+      <input class="input-demo" id="meutreino-ex-nome" placeholder="Nome do exercício">
+      <input class="input-demo" id="meutreino-ex-maquina" placeholder="Nº máquina / equipamento (opcional)">
+      <div style="display:flex;gap:8px">
+        <input class="input-demo" id="meutreino-ex-series-min" placeholder="Séries mín" type="number">
+        <input class="input-demo" id="meutreino-ex-series-max" placeholder="Séries máx" type="number">
+      </div>
+      <div style="display:flex;gap:8px">
+        <input class="input-demo" id="meutreino-ex-reps-min" placeholder="Reps mín" type="number">
+        <input class="input-demo" id="meutreino-ex-reps-max" placeholder="Reps máx" type="number">
+      </div>
+      <input class="input-demo" id="meutreino-ex-intervalo" placeholder="Intervalo (segundos)" type="number">
+      <button class="btn btn-primary btn-full" onclick="meutreino_adicionarExercicio()">Adicionar exercício</button>
+    </div>
+    <div id="meutreino-lista-exercicios" style="margin-top:16px"></div>
+  </div>
 </div>
 
 <!-- ========== CHECKLIST DO TREINO (lista de exercícios) ========== -->
@@ -203,27 +265,12 @@
     <button class="admin-aba-botao" data-aba="treinos" onclick="admin_abrirAba('treinos')">Treinos</button>
     <button class="admin-aba-botao" data-aba="familia" onclick="admin_abrirAba('familia')">Família</button>
     <button class="admin-aba-botao" data-aba="convites" onclick="admin_abrirAba('convites')">Convites</button>
-    <button class="admin-aba-botao" data-aba="notificacoes" onclick="admin_abrirAba('notificacoes')">Notificações</button>
+    <button class="admin-aba-botao" data-aba="feedbacks" onclick="admin_abrirAba('feedbacks')">Feedbacks</button>
   </div>
 
   <div id="admin-aba-perfis" class="admin-aba-conteudo">
-    <div class="card">
-      <div class="muted" style="margin-bottom:8px">Novo perfil</div>
-      <div style="text-align:center;margin-bottom:10px">
-        <img id="admin-novo-perfil-avatar-preview" src="icons/avatars/coelha-halteres.png" width="56" height="56" style="border-radius:50%;object-fit:cover">
-        <input type="hidden" id="admin-novo-perfil-avatar-valor" value="coelha-halteres">
-        <div><button class="btn btn-outline btn-sm" onclick="admin_escolherAvatarNovoPerfil()">Escolher avatar</button></div>
-      </div>
-      <input class="input-demo" id="admin-novo-perfil-nome" placeholder="Nome">
-      <input class="input-demo" id="admin-novo-perfil-pin" placeholder="PIN (4 dígitos)" maxlength="4">
-      <input class="input-demo" id="admin-novo-perfil-relacao" placeholder="Relação (ex: mãe, filha, esposo)">
-      <select class="input-demo" id="admin-novo-perfil-papel">
-        <option value="usuario">Usuário</option>
-        <option value="admin">Admin</option>
-      </select>
-      <button class="btn btn-primary btn-full" onclick="admin_criarPerfil()">Criar perfil</button>
-    </div>
-    <div class="card-label" style="margin-top:20px">Perfis existentes (papel e exclusão)</div>
+    <p class="muted">Perfis são criados pela própria pessoa via link de convite. Aqui você gerencia quem já entrou.</p>
+    <div class="card-label" style="margin-top:16px">Perfis existentes</div>
     <div id="admin-lista-perfis" style="margin-top:8px"></div>
   </div>
 
@@ -281,13 +328,10 @@
     <div id="admin-lista-convites" style="margin-top:8px"></div>
   </div>
 
-  <div id="admin-aba-notificacoes" class="admin-aba-conteudo" style="display:none">
-    <div class="card">
-      <p class="muted">Notificações locais (lembrete de check-in enquanto o app está aberto). Push de verdade com app fechado exige um backend futuro — ver nota em js/notificacoes.js.</p>
-      <button class="btn btn-primary" onclick="notificacoes_pedirPermissao()">Ativar notificações</button>
-      <p id="notificacoes-status" style="margin-top:8px" class="muted"></p>
-    </div>
+  <div id="admin-aba-feedbacks" class="admin-aba-conteudo" style="display:none">
+    <div id="admin-lista-feedbacks"></div>
   </div>
+
 </div>
 
 <!-- ========== FEEDBACK ========== -->
@@ -301,7 +345,7 @@
   </div>
   <textarea class="input-demo" id="feedback-texto" rows="4" placeholder="Escreva aqui..."></textarea>
   <button class="btn btn-primary btn-full" onclick="feedback_enviar()">Enviar</button>
-  <div id="feedback-confirmacao" style="display:none;margin-top:12px" class="card"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg> Enviado! Obrigado.</div>
+  <div id="feedback-confirmacao" style="display:none;margin-top:12px" class="card"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg> Enviado! Em breve você verá uma resposta por aqui.</div>
 </div>
 
 <!-- ========== MODAL: CHECK-IN ========== -->
@@ -417,6 +461,7 @@
 <script src="js/frases.js"></script>
 <script src="js/home.js"></script>
 <script src="js/treino.js"></script>
+<script src="js/meutreino.js"></script>
 <script src="js/execucao.js"></script>
 <script src="js/finalizar.js"></script>
 <script src="js/progresso.js"></script>
@@ -426,7 +471,6 @@
 <script src="js/dayoff.js"></script>
 <script src="js/uploadmd.js"></script>
 <script src="js/youtube.js"></script>
-<script src="js/notificacoes.js"></script>
 <script src="js/relatorio.js"></script>
 <script src="js/admin.js"></script>
 <script src="js/feedback.js"></script>
@@ -439,7 +483,6 @@
       const perfil = carregarSessao();
       if (perfil) {
         irPara('home');
-        notificacoes_verificarLembreteCheckin();
       } else {
         irPara('auth');
       }

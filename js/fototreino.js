@@ -1,50 +1,7 @@
 // ============================================================
-// BORA — Foto do treino em papel (sem OCR — fica pendente pro
-// admin revisar e transcrever manualmente)
+// BORA — Revisão de fotos de treino pelo Admin
+// (o envio da foto em si agora fica em criartreino.js)
 // ============================================================
-
-async function fototreino_enviar() {
-  const input = document.getElementById('fototreino-input');
-  const arquivo = input.files[0];
-  if (!arquivo) {
-    alert('Escolha uma foto primeiro.');
-    return;
-  }
-
-  const perfil = AppState.perfilAtual;
-  const supabase = getSupabase();
-  const nomeArquivo = `${perfil.id}-${Date.now()}.jpg`;
-
-  document.getElementById('fototreino-status').textContent = 'Enviando...';
-
-  const { error: erroUpload } = await supabase.storage
-    .from('fotos-treino')
-    .upload(nomeArquivo, arquivo);
-
-  if (erroUpload) {
-    document.getElementById('fototreino-status').textContent = 'Não foi possível enviar. Tenta de novo.';
-    console.error(erroUpload);
-    return;
-  }
-
-  const { data: urlData } = supabase.storage.from('fotos-treino').getPublicUrl(nomeArquivo);
-
-  const { error: erroInsert } = await supabase.from('fotos_treino').insert({
-    perfil_id: perfil.id,
-    foto_url: urlData.publicUrl,
-  });
-
-  if (erroInsert) {
-    document.getElementById('fototreino-status').textContent = 'Foto enviada, mas houve um erro ao registrar.';
-    return;
-  }
-
-  document.getElementById('fototreino-status').innerHTML =
-    `${icon('check-circle', 16)} Foto enviada! O admin vai revisar e cadastrar seu treino em breve.`;
-  input.value = '';
-}
-
-// ---------- Revisão pelo Admin ----------
 
 async function admin_listarFotosTreino() {
   const supabase = getSupabase();

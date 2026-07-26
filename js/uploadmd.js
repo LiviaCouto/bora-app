@@ -121,13 +121,13 @@ function uploadmd_remover(indice) {
 }
 
 async function uploadmd_confirmarSalvar() {
-  if (!admin_cicloEmEdicao) {
-    alert('Abra um ciclo em "Gerenciar exercícios" antes de importar.');
+  if (!criartreino_cicloIdCriado) {
+    alert('Erro interno: nenhum ciclo selecionado.');
     return;
   }
 
   const supabase = getSupabase();
-  const linhas = uploadmd_exerciciosDetectados.map(e => ({ ...e, ciclo_id: admin_cicloEmEdicao }));
+  const linhas = uploadmd_exerciciosDetectados.map(e => ({ ...e, ciclo_id: criartreino_cicloIdCriado }));
 
   const { error } = await supabase.from('exercicios').insert(linhas);
   if (error) {
@@ -139,6 +139,6 @@ async function uploadmd_confirmarSalvar() {
   document.getElementById('uploadmd-textarea').value = '';
   document.getElementById('uploadmd-preview').innerHTML = '';
   uploadmd_exerciciosDetectados = [];
-  admin_listarExercicios();
-  alert('Treino importado com sucesso!');
+  mostrarModalSalvamento('Treino cadastrado!');
+  setTimeout(() => criartreino_voltar(), 1000);
 }

@@ -123,10 +123,11 @@ body {
 
 /* Modal check-in */
 .modal-overlay {
-  display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 100;
-  align-items: flex-end; justify-content: center;
+  display: none; position: fixed; inset: 0; background: rgba(10,20,18,.45); z-index: 100;
+  align-items: center; justify-content: center; padding: 20px;
+  backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
 }
-.modal-conteudo { background: var(--areia); border-radius: 24px 24px 0 0; padding: 24px 20px 32px; width: 100%; max-width: 420px; max-height: 80vh; overflow-y: auto; }
+.modal-conteudo { background: var(--areia); border-radius: var(--r-card-lg); padding: 24px 20px; width: 100%; max-width: 420px; max-height: 85vh; overflow-y: auto; }
 .chip-atividade {
   background: #fff; border: 1.5px solid var(--border-light); border-radius: 9999px; padding: 10px 16px;
   font-size: 14px; cursor: pointer; margin: 4px;
@@ -165,7 +166,8 @@ body {
   display: flex; align-items: center; justify-content: center; padding: 0 4px;
 }
 .admin-item-linha { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-light); font-size: 13px; }
-.input-demo { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-light); border-radius: var(--r-btn); font-family: var(--font-sans); font-size: 14px; margin-bottom: 10px; }
+.input-demo { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-light); border-radius: var(--r-btn); font-family: var(--font-sans); font-size: 14px; margin-bottom: 10px; box-sizing: border-box; min-width: 0; }
+input[type="date"].input-demo { max-width: 100%; }
 .badge { display: inline-flex; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 9999px; }
 .badge-success { background: var(--verde-check-bg); color: var(--verde-check); }
 .badge-neutral { background: var(--areia-deep); color: var(--text-secondary); }
@@ -442,8 +444,7 @@ textarea.input-demo { resize: vertical; font-family: var(--font-sans); }
   .admin-tabs { flex-wrap: wrap; }
 
   /* Modais deixam de ser "bottom sheet" e viram cartão centralizado */
-  .modal-overlay { align-items: center; }
-  .modal-conteudo { border-radius: var(--r-card-lg); max-height: 85vh; }
+  /* Modais já são centralizados por padrão em qualquer tamanho de tela */
 }
 
 .tabbar-logo { display: none; }

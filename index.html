@@ -114,7 +114,7 @@
       <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
     </button>
     <h2 id="home-saudacao" style="font-family:var(--font-display);margin:0"></h2>
-    <img src="icons/logo-bora-simbolo.png" alt="Bora" style="width:52px">
+    <img src="icons/logo-bora-simbolo.png" alt="Bora" style="width:68px">
   </div>
   <div id="home-card-treino" style="margin-top:16px"></div>
   <div id="home-area-checkin" style="margin-top:16px"></div>
@@ -221,51 +221,84 @@
 <div id="secao-meutreino" class="app-section">
   <button class="btn btn-outline btn-sm" onclick="irPara('treino')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Voltar</button>
   <h2 style="font-family:var(--font-display);margin-top:12px">Gerenciar meu treino</h2>
-  <p class="muted">Aqui você cria seu ciclo e adiciona exercícios manualmente.</p>
 
-  <div class="card" style="margin-top:16px">
-    <div class="muted" style="margin-bottom:8px">Novo ciclo</div>
-    <input class="input-demo" id="meutreino-ciclo-nome" placeholder="Nome do ciclo (ex: Ciclo Julho/Agosto)">
-    <input class="input-demo" id="meutreino-ciclo-academia" placeholder="Nome da academia (opcional)">
-    <input class="input-demo" id="meutreino-ciclo-responsavel" placeholder="Nome do professor (opcional)">
-    <label class="input-label">Término previsto (opcional)</label>
-    <input class="input-demo" id="meutreino-ciclo-fim" type="date">
-    <button class="btn btn-primary btn-full" onclick="meutreino_criarCiclo()">Criar ciclo</button>
-  </div>
+  <button class="btn btn-primary btn-full" style="margin-top:16px" onclick="criartreino_iniciar(AppState.perfilAtual.id, 'meutreino')">+ Criar novo ciclo de treino</button>
 
-  <div id="meutreino-lista-ciclos" style="margin-top:16px"></div>
+  <div class="card-label" style="margin-top:20px">Meus ciclos</div>
+  <div id="meutreino-lista-ciclos" style="margin-top:8px"></div>
 
   <div id="meutreino-painel-exercicios" style="display:none;margin-top:20px">
-    <div class="card">
-      <div class="muted" style="margin-bottom:8px">Adicionar exercício</div>
-      <button class="btn btn-outline btn-full" style="margin-bottom:10px" onclick="meutreino_escolherDaBiblioteca()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg> Escolher da biblioteca</button>
+    <div class="card-label">Exercícios já cadastrados</div>
+    <div id="meutreino-lista-exercicios" style="margin-top:8px"></div>
+  </div>
+</div>
 
-      <label class="input-label">Qual treino?</label>
-      <select class="input-demo" id="meutreino-ex-letra-select" onchange="meutreino_alternarNovoTreino()"></select>
-      <input class="input-demo" id="meutreino-ex-letra-novo" placeholder="Nome do novo treino (ex: C)" style="display:none">
+<!-- ========== CRIAR TREINO (fluxo unificado) ========== -->
+<div id="secao-criartreino" class="app-section">
+  <button class="btn btn-outline btn-sm" onclick="criartreino_voltar()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Voltar</button>
 
-      <input class="input-demo" id="meutreino-ex-nome" placeholder="Nome do exercício">
-      <input class="input-demo" id="meutreino-ex-maquina" placeholder="Nº máquina / equipamento (opcional)">
-      <div style="display:flex;gap:8px">
-        <input class="input-demo" id="meutreino-ex-series-min" placeholder="Séries mín" type="number" value="2">
-        <input class="input-demo" id="meutreino-ex-series-max" placeholder="Séries máx" type="number" value="3">
-      </div>
-      <div style="display:flex;gap:8px">
-        <input class="input-demo" id="meutreino-ex-reps-min" placeholder="Reps mín" type="number" value="8">
-        <input class="input-demo" id="meutreino-ex-reps-max" placeholder="Reps máx" type="number" value="12">
-      </div>
-      <input class="input-demo" id="meutreino-ex-intervalo" placeholder="Intervalo (segundos)" type="number" value="60">
-      <button class="btn btn-primary btn-full" onclick="meutreino_adicionarExercicio()">Adicionar exercício</button>
+  <!-- Passo 1: escolher método -->
+  <div id="criartreino-passo-metodo" class="criartreino-passo">
+    <h2 style="font-family:var(--font-display);margin-top:12px">Como você quer montar o treino?</h2>
+    <div class="grade-treinos" style="margin-top:16px">
+      <button class="card-treino-opcao" onclick="criartreino_escolherMetodo('foto')">
+        <span class="card-treino-opcao-letra"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 15l4-4 4 4 6-6"/></svg></span>
+        <span class="card-treino-opcao-texto"><strong>Enviar foto</strong><span class="muted">Tira ou escolhe da galeria</span></span>
+      </button>
+      <button class="card-treino-opcao" onclick="criartreino_escolherMetodo('md')">
+        <span class="card-treino-opcao-letra"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5M9 13h6M9 17h6"/></svg></span>
+        <span class="card-treino-opcao-texto"><strong>Colar texto</strong><span class="muted">Texto corrido, sem limite</span></span>
+      </button>
+      <button class="card-treino-opcao" onclick="criartreino_escolherMetodo('manual')">
+        <span class="card-treino-opcao-letra"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+        <span class="card-treino-opcao-texto"><strong>Montar manualmente</strong><span class="muted">Marca os exercícios numa lista</span></span>
+      </button>
     </div>
-    <div id="meutreino-lista-exercicios" style="margin-top:16px"></div>
   </div>
 
-  <div class="card-label" style="margin-top:24px">Ou envie a foto do treino em papel</div>
-  <div class="card" style="margin-top:8px">
-    <p class="muted" style="margin-bottom:10px">Sem leitor automático ainda — a foto fica pendente pro admin cadastrar seu treino a partir dela.</p>
-    <input type="file" accept="image/*" capture="environment" id="fototreino-input" class="input-demo">
-    <button class="btn btn-outline btn-full" onclick="fototreino_enviar()">Enviar foto</button>
+  <!-- Passo 2 (md/manual): dados do ciclo -->
+  <div id="criartreino-passo-cicloform" class="criartreino-passo" style="display:none">
+    <h2 style="font-family:var(--font-display);margin-top:12px">Sobre esse treino</h2>
+    <input class="input-demo" id="criartreino-ciclo-nome" placeholder="Nome do treino (obrigatório, ex: Ciclo Julho/Agosto)" style="margin-top:12px">
+    <input class="input-demo" id="criartreino-ciclo-prof" placeholder="Nome do professor (opcional)">
+    <input class="input-demo" id="criartreino-ciclo-academia" placeholder="Nome da academia (opcional)">
+    <button class="btn btn-primary btn-full" onclick="criartreino_continuarAposCiclo()">Continuar</button>
+  </div>
+
+  <!-- Passo 2 (foto): até 2 fotos -->
+  <div id="criartreino-passo-foto" class="criartreino-passo" style="display:none">
+    <h2 style="font-family:var(--font-display);margin-top:12px">Enviar foto do treino</h2>
+    <p class="muted">Até 2 fotos — tira na hora ou escolhe da galeria</p>
+    <input type="file" accept="image/*" capture="environment" id="fototreino-input-1" class="input-demo">
+    <input type="file" accept="image/*" capture="environment" id="fototreino-input-2" class="input-demo">
+    <button class="btn btn-primary btn-full" onclick="criartreino_enviarFotos()">Enviar</button>
     <p id="fototreino-status" class="muted" style="margin-top:8px"></p>
+  </div>
+
+  <!-- Passo 3 (md): colar texto -->
+  <div id="criartreino-passo-md" class="criartreino-passo" style="display:none">
+    <h2 style="font-family:var(--font-display);margin-top:12px">Cole o texto do treino</h2>
+    <textarea class="input-demo" id="uploadmd-textarea" rows="10" placeholder="Cole aqui, sem limite de tamanho (ex: Treino A / * Exercício — 2 a 3 / 8 a 12 / 1 min)" style="margin-top:12px"></textarea>
+    <button class="btn btn-outline btn-full" onclick="uploadmd_processar()">Analisar texto</button>
+    <div id="uploadmd-preview" style="margin-top:12px"></div>
+  </div>
+
+  <!-- Passo 3 (manual): grupos musculares -->
+  <div id="criartreino-passo-manual-grupos" class="criartreino-passo" style="display:none">
+    <h2 style="font-family:var(--font-display);margin-top:12px">Qual região do corpo?</h2>
+    <p class="muted" id="criartreino-manual-contador"></p>
+    <div class="grade-menu-progresso" style="margin-top:12px" id="criartreino-grupos-lista"></div>
+    <button class="btn btn-primary btn-full" style="margin-top:20px" onclick="criartreino_manualFinalizar()">Finalizar</button>
+  </div>
+
+  <!-- Passo 4 (manual): checklist do grupo escolhido -->
+  <div id="criartreino-passo-manual-checklist" class="criartreino-passo" style="display:none">
+    <button class="btn btn-outline btn-sm" onclick="criartreino_voltarAosGrupos()">← Voltar às regiões</button>
+    <h2 style="font-family:var(--font-display);margin-top:12px" id="criartreino-checklist-titulo"></h2>
+    <p class="muted">Marque quantos quiser</p>
+    <div id="criartreino-checklist-itens" style="margin-top:12px"></div>
+    <input class="input-demo" id="criartreino-checklist-outro" placeholder="Outro (não achei na lista)" style="margin-top:8px">
+    <button class="btn btn-primary btn-full" onclick="criartreino_confirmarChecklist()">Adicionar selecionados</button>
   </div>
 </div>
 
@@ -391,47 +424,12 @@
 
   <div id="admin-aba-treinos" class="admin-aba-conteudo" style="display:none">
     <select class="input-demo" id="admin-select-perfil-ciclo" onchange="admin_carregarCiclosDoPerfil()"></select>
-    <div class="card">
-      <div class="muted" style="margin-bottom:8px">Novo ciclo</div>
-      <input class="input-demo" id="admin-ciclo-nome" placeholder="Nome do ciclo (ex: Ciclo Julho/Agosto)">
-      <input class="input-demo" id="admin-ciclo-academia" placeholder="Nome da academia (opcional)">
-      <input class="input-demo" id="admin-ciclo-responsavel" placeholder="Nome do professor (opcional)">
-      <label class="input-label">Término previsto (opcional)</label>
-      <input class="input-demo" id="admin-ciclo-fim" type="date">
-      <button class="btn btn-primary btn-full" onclick="admin_criarCiclo()">Criar ciclo</button>
-    </div>
+    <button class="btn btn-primary btn-full" onclick="criartreino_iniciar(document.getElementById('admin-select-perfil-ciclo').value, 'admin')">+ Criar novo ciclo de treino</button>
     <div id="admin-lista-ciclos" style="margin-top:16px"></div>
 
     <div id="admin-painel-exercicios" style="display:none;margin-top:20px">
-      <div class="card">
-        <div class="muted" style="margin-bottom:8px">Colar treino (texto/MD) — parser automático</div>
-        <textarea class="input-demo" id="uploadmd-textarea" rows="6" placeholder="Cole aqui o texto do treino (ex: Treino A / * Exercício — 2 a 3 / 8 a 12 / 1 min)"></textarea>
-        <button class="btn btn-outline btn-full" onclick="uploadmd_processar()">Analisar texto</button>
-        <div id="uploadmd-preview" style="margin-top:12px"></div>
-      </div>
-
-      <div class="card" style="margin-top:16px">
-        <div class="muted" style="margin-bottom:8px">Ou adicionar exercício manualmente</div>
-        <button class="btn btn-outline btn-full" style="margin-bottom:10px" onclick="admin_escolherDaBiblioteca()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg> Escolher da biblioteca</button>
-
-        <label class="input-label">Qual treino?</label>
-        <select class="input-demo" id="admin-ex-letra-select" onchange="admin_alternarNovoTreino()"></select>
-        <input class="input-demo" id="admin-ex-letra-novo" placeholder="Nome do novo treino (ex: C)" style="display:none">
-
-        <input class="input-demo" id="admin-ex-nome" placeholder="Nome do exercício">
-        <input class="input-demo" id="admin-ex-maquina" placeholder="Nº máquina / equipamento (opcional)">
-        <div style="display:flex;gap:8px">
-          <input class="input-demo" id="admin-ex-series-min" placeholder="Séries mín" type="number" value="2">
-          <input class="input-demo" id="admin-ex-series-max" placeholder="Séries máx" type="number" value="3">
-        </div>
-        <div style="display:flex;gap:8px">
-          <input class="input-demo" id="admin-ex-reps-min" placeholder="Reps mín" type="number" value="8">
-          <input class="input-demo" id="admin-ex-reps-max" placeholder="Reps máx" type="number" value="12">
-        </div>
-        <input class="input-demo" id="admin-ex-intervalo" placeholder="Intervalo (segundos)" type="number" value="60">
-        <button class="btn btn-primary btn-full" onclick="admin_adicionarExercicio()">Adicionar exercício</button>
-      </div>
-      <div id="admin-lista-exercicios" style="margin-top:16px"></div>
+      <div class="card-label">Exercícios já cadastrados</div>
+      <div id="admin-lista-exercicios" style="margin-top:8px"></div>
     </div>
   </div>
 
@@ -677,6 +675,7 @@
 <script src="js/meutreino.js"></script>
 <script src="js/biblioteca.js"></script>
 <script src="js/fototreino.js"></script>
+<script src="js/criartreino.js"></script>
 <script src="js/execucao.js"></script>
 <script src="js/finalizar.js"></script>
 <script src="js/progresso.js"></script>

@@ -109,7 +109,7 @@ async function admin_carregarCiclosDoPerfil() {
         <div class="muted" style="font-size:11px">${c.nome_academia || ''}${c.data_fim_prevista ? ' · até ' + formatarDataBR(c.data_fim_prevista) : ''}</div>
       </div>
       <div style="display:flex;gap:6px">
-        <button class="btn btn-outline btn-sm" onclick="admin_gerenciarExercicios('${c.id}')">Editar exercícios</button>
+        <button class="btn btn-outline btn-sm" onclick="admin_gerenciarExercicios('${c.id}')">Ver exercícios</button>
         <button class="btn btn-danger btn-sm" onclick="admin_apagarCiclo('${c.id}')">Excluir</button>
       </div>
     </div>
@@ -129,70 +129,12 @@ async function admin_apagarCiclo(cicloId) {
   admin_carregarCiclosDoPerfil();
 }
 
-async function admin_criarCiclo() {
-  const perfilId = document.getElementById('admin-select-perfil-ciclo').value;
-  const nomeCiclo = document.getElementById('admin-ciclo-nome').value.trim();
-  const academia = document.getElementById('admin-ciclo-academia').value.trim();
-  const responsavel = document.getElementById('admin-ciclo-responsavel').value.trim();
-  const dataFim = document.getElementById('admin-ciclo-fim').value;
-
-  const supabase = getSupabase();
-  const { error } = await supabase.from('ciclos').insert({
-    perfil_id: perfilId,
-    data_inicio: todayLocal(),
-    data_fim_prevista: dataFim || null,
-    nome_ciclo: nomeCiclo || null,
-    nome_academia: academia || null,
-    responsavel_nome: responsavel || null,
-  });
-
-  if (error) {
-    alert('Não foi possível criar o ciclo.');
-    return;
-  }
-
-  document.getElementById('admin-ciclo-nome').value = '';
-  document.getElementById('admin-ciclo-academia').value = '';
-  document.getElementById('admin-ciclo-responsavel').value = '';
-  document.getElementById('admin-ciclo-fim').value = '';
-  admin_carregarCiclosDoPerfil();
-}
-
 let admin_cicloEmEdicao = null;
-let admin_bibliotecaIdSelecionado = null;
 
 async function admin_gerenciarExercicios(cicloId) {
   admin_cicloEmEdicao = cicloId;
   document.getElementById('admin-painel-exercicios').style.display = 'block';
-  await admin_atualizarSelectDeTreinos();
   await admin_listarExercicios();
-}
-
-async function admin_atualizarSelectDeTreinos() {
-  const supabase = getSupabase();
-  const { data } = await supabase
-    .from('exercicios')
-    .select('letra_treino')
-    .eq('ciclo_id', admin_cicloEmEdicao);
-
-  const letras = [...new Set((data || []).map(e => e.letra_treino))].sort();
-  const select = document.getElementById('admin-ex-letra-select');
-  select.innerHTML = letras.map(l => `<option value="${l}">Treino ${l}</option>`).join('') +
-    `<option value="__novo__">+ Criar novo treino</option>`;
-  admin_alternarNovoTreino();
-}
-
-function admin_alternarNovoTreino() {
-  const select = document.getElementById('admin-ex-letra-select');
-  const campoNovo = document.getElementById('admin-ex-letra-novo');
-  campoNovo.style.display = select.value === '__novo__' ? 'block' : 'none';
-}
-
-function admin_escolherDaBiblioteca() {
-  biblioteca_abrirSeletor((id, nome) => {
-    admin_bibliotecaIdSelecionado = id;
-    document.getElementById('admin-ex-nome').value = nome;
-  });
 }
 
 async function admin_listarExercicios() {
@@ -204,57 +146,17 @@ async function admin_listarExercicios() {
     .order('letra_treino')
     .order('ordem');
 
+  const perfilId = document.getElementById('admin-select-perfil-ciclo').value;
   const container = document.getElementById('admin-lista-exercicios');
-  container.innerHTML = (data || []).map(e => `
-    <div class="admin-item-linha">
-      <div><strong>Treino ${e.letra_treino}</strong> — ${e.nome} (${e.series_min}-${e.series_max} séries × ${e.reps_min}-${e.reps_max} reps)</div>
-      <button class="btn btn-danger btn-sm" onclick="admin_apagarExercicio('${e.id}')">Excluir</button>
-    </div>
-  `).join('') || '<p class="muted">Nenhum exercício cadastrado neste ciclo ainda.</p>';
-}
-
-async function admin_adicionarExercicio() {
-  const selectLetra = document.getElementById('admin-ex-letra-select').value;
-  const letra = (selectLetra === '__novo__'
-    ? document.getElementById('admin-ex-letra-novo').value.trim()
-    : selectLetra).toUpperCase();
-  const nome = document.getElementById('admin-ex-nome').value.trim();
-  const numeroMaquina = document.getElementById('admin-ex-maquina').value.trim();
-  const seriesMin = parseInt(document.getElementById('admin-ex-series-min').value) || 2;
-  const seriesMax = parseInt(document.getElementById('admin-ex-series-max').value) || 3;
-  const repsMin = parseInt(document.getElementById('admin-ex-reps-min').value) || 8;
-  const repsMax = parseInt(document.getElementById('admin-ex-reps-max').value) || 12;
-  const intervalo = parseInt(document.getElementById('admin-ex-intervalo').value) || 60;
-
-  if (!letra || !nome) {
-    alert('Preencha ao menos o treino e o nome do exercício.');
-    return;
-  }
-
-  const supabase = getSupabase();
-  const { error } = await supabase.from('exercicios').insert({
-    ciclo_id: admin_cicloEmEdicao,
-    letra_treino: letra,
-    biblioteca_exercicio_id: admin_bibliotecaIdSelecionado,
-    nome,
-    numero_maquina: numeroMaquina || null,
-    series_min: seriesMin,
-    series_max: seriesMax,
-    reps_min: repsMin,
-    reps_max: repsMax,
-    intervalo_segundos: intervalo,
-  });
-
-  if (error) {
-    alert('Não foi possível adicionar o exercício.');
-    return;
-  }
-
-  document.getElementById('admin-ex-nome').value = '';
-  document.getElementById('admin-ex-maquina').value = '';
-  admin_bibliotecaIdSelecionado = null;
-  admin_atualizarSelectDeTreinos();
-  admin_listarExercicios();
+  container.innerHTML = `
+    <button class="btn btn-outline btn-full" style="margin-bottom:12px" onclick="criartreino_continuarComCicloExistente('${admin_cicloEmEdicao}', '${perfilId}', 'admin')">+ Adicionar mais exercícios</button>
+    ${(data || []).map(e => `
+      <div class="admin-item-linha">
+        <div><strong>Treino ${e.letra_treino}</strong> — ${e.nome} (${e.series_min}-${e.series_max} séries × ${e.reps_min}-${e.reps_max} reps)</div>
+        <button class="btn btn-danger btn-sm" onclick="admin_apagarExercicio('${e.id}')">Excluir</button>
+      </div>
+    `).join('') || '<p class="muted">Nenhum exercício cadastrado neste ciclo ainda.</p>'}
+  `;
 }
 
 async function admin_apagarExercicio(id) {

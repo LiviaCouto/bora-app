@@ -81,6 +81,12 @@ body {
   font-family: var(--font-mono); font-size: 20px; font-weight: 600; background: #fff;
 }
 .pin-box.filled { border-color: var(--chama); color: var(--chama-dark); }
+.pin-input.shake { animation: shake-pin .4s; }
+@keyframes shake-pin {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}
 .pin-teclado { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 260px; margin: 0 auto; }
 .pin-tecla {
   aspect-ratio: 1; width: 100%; background: #fff; border: 1px solid var(--border-light); border-radius: 50%;
@@ -220,7 +226,7 @@ body {
 .card-menu-progresso-icone { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 
 /* Rodapé de créditos */
-.rodape-creditos { text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border-light); }
+.rodape-creditos { text-align: center; font-size: 10px; font-style: italic; color: var(--text-muted); margin-top: 40px; padding-top: 16px; padding-bottom: 8px; border-top: 1px solid var(--border-light); }
 
 /* Cronômetro do check-in livre */
 .cronometro-box { text-align: center; background: var(--areia-deep); border-radius: var(--r-card); padding: 16px; margin-bottom: 14px; }
@@ -233,6 +239,60 @@ body {
 /* Checkbox de objetivo (Meu Perfil) */
 .check-wrap { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #fff; border: 1px solid var(--border-light); border-radius: var(--r-btn); margin-bottom: 8px; font-size: 13px; cursor: pointer; }
 .check-wrap input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--chama); flex-shrink: 0; }
+
+/* Hambúrguer + menu lateral */
+.btn-hamburguer { background: none; border: none; color: var(--mare); cursor: pointer; padding: 4px; }
+.menu-lateral-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 150; }
+.menu-lateral-overlay.aberto { display: block; }
+.menu-lateral {
+  position: fixed; top: 0; left: 0; bottom: 0; width: 250px; background: var(--areia);
+  z-index: 151; padding: 20px; transform: translateX(-100%); transition: transform .25s ease-out;
+  box-shadow: 4px 0 20px rgba(0,0,0,.15);
+}
+.menu-lateral.aberto { transform: translateX(0); }
+.menu-lateral-item {
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+  background: none; border: none; padding: 12px 8px; font-size: 14px; color: var(--text-primary);
+  cursor: pointer; border-radius: var(--r-btn);
+}
+.menu-lateral-item:hover { background: var(--areia-deep); }
+.menu-lateral-item.sair { color: var(--erro); margin-top: 20px; border-top: 1px solid var(--border-light); padding-top: 16px; }
+
+/* Selos de conquista na Home */
+.selo-conquista { display: inline-flex; flex-direction: column; align-items: center; gap: 4px; width: 62px; margin-right: 6px; }
+.selo-conquista-icone {
+  width: 44px; height: 44px; border-radius: 50%; background: var(--chama-pale, #FFE7E0); color: var(--chama-dark);
+  display: flex; align-items: center; justify-content: center;
+}
+.selo-conquista-titulo { font-size: 9px; text-align: center; color: var(--text-secondary); line-height: 1.2; }
+
+/* Frase de incentivo do streak */
+.streak-destaque-incentivo { font-size: 12px; color: var(--sol); margin-top: 8px; font-weight: 600; position: relative; }
+
+/* Modo escuro (aplicado via [data-theme="dark"] na tag <html>) */
+[data-theme="dark"] {
+  --areia: #14201F;
+  --areia-deep: #1C2B29;
+  --white: #1C2B29;
+  --text-primary: #F3F2EE;
+  --text-secondary: #B9C7C3;
+  --text-muted: #6E8783;
+  --border-light: rgba(243,242,238,.10);
+}
+[data-theme="dark"] body { background: var(--areia); color: var(--text-primary); }
+[data-theme="dark"] .card,
+[data-theme="dark"] .card-cream,
+[data-theme="dark"] .input-demo,
+[data-theme="dark"] .pin-box,
+[data-theme="dark"] .pin-tecla,
+[data-theme="dark"] .card-treino-opcao,
+[data-theme="dark"] .item-checklist,
+[data-theme="dark"] .item-historico,
+[data-theme="dark"] .card-menu-progresso,
+[data-theme="dark"] .avatar-opcao,
+[data-theme="dark"] .check-wrap { background: var(--white); color: var(--text-primary); border-color: var(--border-light); }
+[data-theme="dark"] .modal-conteudo { background: var(--areia-deep); }
+[data-theme="dark"] .menu-lateral { background: var(--areia); }
 
 /* Desafios — tela "em breve" */
 .desafios-em-breve { text-align: center; padding: 60px 20px; }

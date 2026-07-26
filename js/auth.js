@@ -90,6 +90,10 @@ async function auth_conferirPin() {
     erro.textContent = 'PIN incorreto. Tente novamente.';
     auth_pinDigitado = '';
     auth_atualizarPinVisual();
+    const pinInput = document.querySelector('.pin-input');
+    pinInput.classList.remove('shake');
+    void pinInput.offsetWidth; // força reflow pra reiniciar a animação
+    pinInput.classList.add('shake');
     return;
   }
 

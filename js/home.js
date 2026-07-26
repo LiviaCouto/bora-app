@@ -71,7 +71,42 @@ async function render_home() {
   }
 
   await home_atualizarStreak(perfil.id);
+  await home_renderizarSelos(perfil.id);
   await home_listarCheckinsRecentes(perfil.id);
+}
+
+async function home_renderizarSelos(perfilId) {
+  const container = document.getElementById('home-selos-conquistas');
+  if (!container) return;
+
+  const supabase = getSupabase();
+  const { data } = await supabase
+    .from('badges_conquistados')
+    .select('*')
+    .eq('perfil_id', perfilId)
+    .order('data', { ascending: false });
+
+  const conquistados = data || [];
+
+  if (conquistados.length === 0) {
+    container.innerHTML = '<p class="muted" style="font-size:12px">Nenhuma conquista ainda — bora treinar pra desbloquear a primeira!</p>';
+    return;
+  }
+
+  container.innerHTML = `
+    <div style="display:flex;overflow-x:auto;padding-bottom:4px">
+      ${conquistados.map(c => {
+        const info = BADGES[c.badge_codigo];
+        if (!info) return '';
+        return `
+          <div class="selo-conquista">
+            <div class="selo-conquista-icone">${icon(info.icone, 22)}</div>
+            <div class="selo-conquista-titulo">${info.titulo}</div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
 }
 
 async function home_atualizarStreak(perfilId) {
@@ -92,6 +127,13 @@ async function home_atualizarStreak(perfilId) {
   document.getElementById('home-streak-total').textContent =
     `${totalCheckins} check-ins no total`;
   document.getElementById('home-streak-nivel').textContent = nivel.nome;
+
+  const elIncentivo = document.getElementById('home-streak-incentivo');
+  if (elIncentivo) {
+    elIncentivo.textContent = streak > 0
+      ? `Você está ativo há ${streak} dia${streak > 1 ? 's' : ''}. Não pare!`
+      : 'Bora começar sua sequência hoje!';
+  }
 
   const barraEl = document.getElementById('home-streak-barra-preenchida');
   if (barraEl) {

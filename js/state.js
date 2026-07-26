@@ -44,6 +44,7 @@ function carregarSessao() {
 
 function encerrarSessao() {
   localStorage.removeItem('bora_sessao');
+  sessionStorage.removeItem('bora_ultima_secao');
   AppState.perfilAtual = null;
   irPara('auth');
 }

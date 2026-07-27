@@ -21,7 +21,21 @@ function uploadmd_processar() {
 // Parser tolerante: procura blocos "Treino X" e, dentro deles, linhas com
 // nome do exercício + números de série/rep/intervalo em qualquer ordem razoável.
 function uploadmd_parsear(texto) {
-  const linhas = texto.split('\n').map(l => l.trim()).filter(Boolean);
+  // Se o texto colado perdeu as quebras de linha (comum ao colar de
+  // WhatsApp/Notas em alguns celulares), usa o "*" como separador de
+  // linha alternativo, contanto que existam bem mais "*" do que \n.
+  const qtdQuebrasLinha = (texto.match(/\n/g) || []).length;
+  const qtdAsteriscos = (texto.match(/\*/g) || []).length;
+
+  let textoProcessado = texto;
+  if (qtdAsteriscos > qtdQuebrasLinha + 1) {
+    // Garante que "Treino X" e cada "*" comecem uma linha nova antes de dividir
+    textoProcessado = texto
+      .replace(/(treino\s*[A-Za-z])/gi, '\n$1\n')
+      .replace(/\s*\*\s*/g, '\n* ');
+  }
+
+  const linhas = textoProcessado.split('\n').map(l => l.trim()).filter(Boolean);
   const resultado = [];
   let letraAtual = 'A';
   let ordem = 0;
